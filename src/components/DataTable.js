@@ -8,12 +8,12 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy }) {
     if (!number) return false; // Als number null/undefined is, direct fout
   
     const numberString = String(number).trim(); // Zorgt ervoor dat het altijd een string is
-  
     const validFormats = [
-      /^06\d{8}$/, // 06xxxxxxxx
-      /^00316\d{8}$/, // 00316xxxxxxxx
-      /^\+316\d{8}$/ // +316xxxxxxxx
-    ];
+        /^06\d{8}$/,        // 06xxxxxxxx
+        /^00316\d{8}$/,     // 00316xxxxxxxx
+        /^\+316\d{8}$/,     // +316xxxxxxxx
+        /^\+31\s?6\d{8}$/   // +31 6xxxxxxxx (optionele spatie na +31)
+    ];      
     
     return validFormats.some((format) => format.test(numberString));
   };
