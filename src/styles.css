@@ -8,3 +8,12 @@
     border-color: red;
   }
   
+  th {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  th:hover {
+    text-decoration: underline; /* Lichtgrijze kleur */
+  }
+  
