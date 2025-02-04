@@ -11,11 +11,33 @@ export default function UploadExcel() {
     const reader = new FileReader();
     reader.readAsBinaryString(file);
     reader.onload = (e) => {
-      const workbook = XLSX.read(e.target.result, { type: "binary" });
+      const workbook = XLSX.read(e.target.result, { type: "binary", cellText: false, cellDates: true });
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-      const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-      setExcelData(data);
+
+      // Zet alle cellen om naar strings om problemen met telefoonnummers te voorkomen
+      Object.keys(sheet).forEach((cell) => {
+        if (sheet[cell] && sheet[cell].t === "n") {
+          sheet[cell].z = "@"; // Zorgt ervoor dat Excel het als string behandelt
+          sheet[cell].t = "s"; // Forceert string type
+          sheet[cell].v = String(sheet[cell].v); // Converteer expliciet naar string
+        }
+      });
+
+      let data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+      // Verwijder voorlooptekens (') uit kolommen LocPhone en LocMobile
+      const updatedData = data.map((row, index) => {
+        if (index === 0) return row; // Laat headers ongewijzigd
+        return [
+          ...row.slice(0, 9),
+          row[9] && row[9] !== "NULL" ? row[9].replace(/^'/, "") : "", // LocPhone
+          row[10] && row[10] !== "NULL" ? row[10].replace(/^'/, "") : "", // LocMobile
+          ...row.slice(11)
+        ];
+      });
+
+      setExcelData(updatedData);
     };
   };
 
@@ -33,7 +55,7 @@ export default function UploadExcel() {
       {excelData.length > 0 && (
         <div className="mt-4 border p-2">
           <h2 className="text-lg font-semibold">Voorbeeld Data:</h2>
-          <pre className="text-sm whitespace-pre-wrap">{JSON.stringify(excelData.slice(0, 30), null, 2)}</pre>
+          <pre className="text-sm whitespace-pre-wrap">{JSON.stringify(excelData.slice(0, 5), null, 2)}</pre>
         </div>
       )}
     </div>
