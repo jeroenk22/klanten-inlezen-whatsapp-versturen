@@ -10,6 +10,18 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy }) {
     return validFormats.some((format) => format.test(number.trim()));
   };
 
+  const copyInvalidOrderNumbers = () => {
+    const invalidOrderNumbers = data
+      .slice(1) // Sla de header over
+      .filter((row) => !validateMobileNumber(row[11])) // Controleer of mobiel nummer ongeldig is
+      .map((row) => row[1]) // Haal de OrderId's op (index 0)
+      .join("\n"); // Zet ze om in een string gescheiden door nieuwe regels
+
+    navigator.clipboard.writeText(invalidOrderNumbers).then(() => {
+      alert("Ordernummers met foutieve mobiele nummers gekopieerd naar klembord!");
+    });
+  };
+
   const copyInvalidMobileNumbers = () => {
     const invalidSjabloonnrs = data
       .slice(1) // Sla de header over
@@ -28,15 +40,18 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy }) {
 
       <div className="mb-2">
         <button className="mr-2 p-2 bg-blue-500 text-white rounded" onClick={() => onCopy(1)}>
-          Kopieer alle Ordernrs
+          Kopieer Ordernrs
         </button>
         <button className="mr-2 p-2 bg-green-500 text-white rounded" onClick={() => onCopy(2)}>
-          Kopieer alle Sjabloonnrs
+          Kopieer Sjabloonnrs
         </button>
         <button className="mr-2 p-2 bg-yellow-500 text-white rounded" onClick={() => onCopy(3)}>
-          Kopieer alle Taaknrs
+          Kopieer Taaknrs
         </button>
-        <button className="p-2 bg-red-500 text-white rounded" onClick={copyInvalidMobileNumbers}>
+        <button className="p-2 bg-red-600 text-white rounded" onClick={copyInvalidOrderNumbers}>
+          Kopieer Ordernrs met foutief mobiel nummer
+        </button>
+        <button className="mr-2 p-2 bg-red-500 text-white rounded" onClick={copyInvalidMobileNumbers}>
           Kopieer Sjabloonnrs met foutief mobiel nummer
         </button>
       </div>
