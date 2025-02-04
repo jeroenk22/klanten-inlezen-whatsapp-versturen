@@ -5,16 +5,17 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy }) {
   const [sortDirection, setSortDirection] = useState(null); // 'asc' of 'desc'
 
   const validateMobileNumber = (number) => {
-    if (!number) return false; // Als number null/undefined is, direct fout
+    if (!number) return false; // Voorkomt fouten bij null of undefined
   
-    const numberString = String(number).trim(); // Zorgt ervoor dat het altijd een string is
+    const numberString = String(number).trim().replace(/\s+/g, ""); // Verwijder alle spaties
+  
     const validFormats = [
-        /^06\d{8}$/,        // 06xxxxxxxx
-        /^00316\d{8}$/,     // 00316xxxxxxxx
-        /^\+316\d{8}$/,     // +316xxxxxxxx
-        /^\+31\s?6\d{8}$/   // +31 6xxxxxxxx (optionele spatie na +31)
-    ];      
-    
+      /^06\d{8}$/,        // 06xxxxxxxx
+      /^00316\d{8}$/,     // 00316xxxxxxxx
+      /^\+316\d{8}$/,     // +316xxxxxxxx
+      /^\+31\s?6\d{8}$/   // +31 6xxxxxxxx (optionele spatie na +31)
+    ];
+  
     return validFormats.some((format) => format.test(numberString));
   };
   
