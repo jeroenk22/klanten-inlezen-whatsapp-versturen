@@ -28,7 +28,7 @@ export default function UploadExcel() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-2">Upload Excel & Verwerk Gegevens</h1>
+      <h1 className="text-xl font-bold mb-2">Verstuur Whatsapp bericht naar mestklanten</h1>
       <FileUploader onUpload={handleFileUpload} />
       {excelData.length > 0 && (
         <DataTable
