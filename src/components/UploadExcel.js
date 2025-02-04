@@ -27,18 +27,53 @@ export default function UploadExcel() {
 
       let data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-      // Verwijder specifieke kolommen, formatteer MomentRTA, en verwijder voorlooptekens ('), vervang NULL
+      // Verwijder specifieke kolommen, hernoem headers, formatteer MomentRTA, verwijder voorlooptekens ('), en vervang NULL
       const updatedData = data.map((row, index) => {
         if (index === 0) {
-          // Laat headers ongewijzigd, maar verwijder specifieke kolommen
-          return row.filter((_, colIndex) => ![11, 12, 13, 14, 15, 16].includes(colIndex));
+          // Hernoem headers en verwijder specifieke kolommen
+          return row
+            .filter((_, colIndex) => ![11, 12, 13, 14, 15, 16].includes(colIndex))
+            .map((header) => {
+              switch (header) {
+                case "OrderId":
+                  return "Ordernr.";
+                case "SjOrderId":
+                  return "Sjabloonnr.";
+                case "OrdSubTaskNo":
+                  return "Taaknr.";
+                case "LocName":
+                  return "Naam";
+                case "LocStreet":
+                  return "Adres";
+                case "LocZip":
+                  return "Postcode";
+                case "LocCity":
+                  return "Plaats";
+                case "LocCountry":
+                  return "Land";
+                case "LocContact":
+                  return "Contact";
+                case "LocPhone":
+                  return "Telefoonnummer";
+                case "LocMobile":
+                  return "Mobiel";
+                case "LocLocation":
+                  return "Locatie";
+                case "ColliDescription":
+                  return "Omschrijving";
+                case "Routenumber":
+                  return "Route";
+                default:
+                  return header;
+              }
+            });
         }
         const formattedRow = row
           .filter((_, colIndex) => ![11, 12, 13, 14, 15, 16].includes(colIndex))
           .map((cell, colIndex) => {
             // Vervang NULL door lege string
             if (cell === "NULL") return "";
-            // Verwijder voorloopteken ' voor LocPhone (index 9) en LocMobile (index 10)
+            // Verwijder voorloopteken ' voor Telefoonnummer (index 9) en Mobiel (index 10)
             if ((colIndex === 9 || colIndex === 10) && typeof cell === "string") {
               return cell.replace(/^'/, "");
             }
@@ -60,6 +95,13 @@ export default function UploadExcel() {
     };
   };
 
+  const copyToClipboard = (columnIndex) => {
+    const values = excelData.slice(1).map((row) => row[columnIndex]).join("\n");
+    navigator.clipboard.writeText(values).then(() => {
+      alert("Gegevens gekopieerd naar klembord!");
+    });
+  };
+
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-2">Upload Excel & Verwerk Gegevens</h1>
@@ -74,6 +116,28 @@ export default function UploadExcel() {
       {excelData.length > 0 && (
         <div className="mt-4 border p-2">
           <h2 className="text-lg font-semibold">Mestmonsters Eurofins {formattedTitleDate}</h2>
+
+          <div className="mb-4">
+            <button
+              onClick={() => copyToClipboard(0)}
+              className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+            >
+              Kopieer Ordernrs
+            </button>
+            <button
+              onClick={() => copyToClipboard(1)}
+              className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+            >
+              Kopieer Sjabloonnrs
+            </button>
+            <button
+              onClick={() => copyToClipboard(2)}
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Kopieer Taaknrs
+            </button>
+          </div>
+
           <table className="table-auto border-collapse border border-gray-400 w-full text-sm">
             <thead>
               <tr>
