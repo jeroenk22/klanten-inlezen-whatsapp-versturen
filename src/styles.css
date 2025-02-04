@@ -1,0 +1,10 @@
+/* Voor een groen randje (geldig mobiel nummer) */
+.border-green-500 {
+    border-color: green;
+  }
+  
+  /* Voor een rood randje (ongeldig mobiel nummer) */
+  .border-red-500 {
+    border-color: red;
+  }
+  
