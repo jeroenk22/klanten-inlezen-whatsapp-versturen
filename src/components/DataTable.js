@@ -34,7 +34,7 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy }) {
     const invalidOrderNumbers = data
       .slice(1)
       .filter((row) => !validateMobileNumber(row[11]))
-      .map((row) => row[0])
+      .map((row) => row[1])
       .join("\n");
     navigator.clipboard.writeText(invalidOrderNumbers).then(() => {
       alert("Ordernummers met foutieve mobiele nummers gekopieerd naar klembord!");
@@ -45,7 +45,7 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy }) {
     const invalidSjabloonnrs = data
       .slice(1)
       .filter((row) => !validateMobileNumber(row[11]))
-      .map((row) => row[1])
+      .map((row) => row[2])
       .join("\n");
     navigator.clipboard.writeText(invalidSjabloonnrs).then(() => {
       alert("Sjabloonnrs met foutieve mobiele nummers gekopieerd naar klembord!");
