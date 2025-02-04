@@ -71,11 +71,25 @@ export default function UploadExcel() {
         const formattedRow = row
           .filter((_, colIndex) => ![11, 12, 13, 14, 15, 16].includes(colIndex))
           .map((cell, colIndex) => {
-            // Vervang NULL door lege string
-            if (cell === "NULL") return "";
-            // Verwijder voorloopteken ' voor Telefoonnummer (index 9) en Mobiel (index 10)
-            if ((colIndex === 9 || colIndex === 10) && typeof cell === "string") {
+            // Vervang NULL door een lege string in Telefoonnummer (index 9) en overige kolommen
+            if (colIndex === 9 && (!cell || cell === "NULL")) {
+              return "";
+            }
+            // Toon een inputveld voor lege of NULL waarden in de Mobiel-kolom (index 10)
+            if (colIndex === 10 && (!cell || cell === "NULL")) {
+              return { value: "", editable: true };
+            }
+            // Verwijder voorloopteken ' voor Telefoonnummer (index 9)
+            if (colIndex === 9 && typeof cell === "string") {
               return cell.replace(/^'/, "");
+            }
+            // Verwerk bestaande Mobiel-waarden als object
+            if (colIndex === 10 && typeof cell === "string") {
+              return { value: cell.replace(/^'/, ""), editable: true };
+            }
+            // Vervang NULL in andere kolommen door een lege string
+            if (cell === "NULL") {
+              return "";
             }
             return cell;
           });
@@ -95,8 +109,16 @@ export default function UploadExcel() {
     };
   };
 
+  const handleInputChange = (rowIndex, value) => {
+    setExcelData((prevData) => {
+      const updatedData = [...prevData];
+      updatedData[rowIndex][10] = { value, editable: true };
+      return updatedData;
+    });
+  };
+
   const copyToClipboard = (columnIndex) => {
-    const values = excelData.slice(1).map((row) => row[columnIndex]).join("\n");
+    const values = excelData.slice(1).map((row) => row[columnIndex]?.value || row[columnIndex]).join("\n");
     navigator.clipboard.writeText(values).then(() => {
       alert("Gegevens gekopieerd naar klembord!");
     });
@@ -153,7 +175,16 @@ export default function UploadExcel() {
                 <tr key={rowIndex}>
                   {row.map((cell, cellIndex) => (
                     <td key={cellIndex} className="border border-gray-300 px-2 py-1">
-                      {cell}
+                      {cellIndex === 10 && cell?.editable ? (
+                        <input
+                          type="text"
+                          value={cell.value}
+                          onChange={(e) => handleInputChange(rowIndex + 1, e.target.value)}
+                          className="border border-gray-300 px-2 py-1 w-full"
+                        />
+                      ) : (
+                        cell?.value || cell
+                      )}
                     </td>
                   ))}
                 </tr>
