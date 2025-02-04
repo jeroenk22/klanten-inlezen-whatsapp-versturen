@@ -67,22 +67,22 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy }) {
 
       <div className="mb-2">
         <button className="mr-2 p-2 bg-blue-500 text-white rounded" onClick={() => onCopy(1)}>
-          Kopieer Ordernrs
+            Kopieer Ordernrs
         </button>
         <button className="mr-2 p-2 bg-green-500 text-white rounded" onClick={() => onCopy(2)}>
-          Kopieer Sjabloonnrs
+            Kopieer Sjabloonnrs
         </button>
         <button className="mr-2 p-2 bg-yellow-500 text-white rounded" onClick={() => onCopy(3)}>
-          Kopieer Taaknrs
+            Kopieer Taaknrs
         </button>
-        <button className="mr-2 bg-red-600 text-white rounded" onClick={copyInvalidOrderNumbers}>
-          Kopieer Ordernrs met foutief mobiel nummer
+        <button className="mr-2 p-2 bg-red-500 text-white rounded" onClick={copyInvalidOrderNumbers}>
+            Kopieer Ordernrs met foutief mobiel nummer
         </button>
-        <button className="p-2 p-2 bg-red-500 text-white rounded" onClick={copyInvalidMobileNumbers}>
-          Kopieer Sjabloonnrs met foutief mobiel nummer
+        <button className="p-2 bg-red-600 text-white rounded" onClick={copyInvalidMobileNumbers}>
+            Kopieer Sjabloonnrs met foutief mobiel nummer
         </button>
+    </div>
 
-      </div>
 
       <table className="table-auto border-collapse border border-gray-400 w-full text-sm">
         <thead>
