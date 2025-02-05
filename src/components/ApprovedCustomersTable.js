@@ -1,26 +1,25 @@
 import React from "react";
+import Table from "./Table";
 
 export default function ApprovedCustomersTable({ customers }) {
-  return (
-    <table className="table-auto w-full border-collapse border border-gray-300 text-sm">
-      <thead>
-        <tr className="bg-gray-200">
-          <th className="border border-gray-300 px-2 py-1">Sjabloon</th>
-          <th className="border border-gray-300 px-2 py-1">Naam</th>
-          <th className="border border-gray-300 px-2 py-1">Mobiel</th>
-        </tr>
-      </thead>
-      <tbody>
-        {customers.map((row, index) => (
-          <tr key={index}>
-            <td className="border border-gray-300 px-2 py-1 text-center">
-                {row.sjabloon ? <span className="text-green-500 text-lg">✔</span> : ""}
-            </td>
-            <td className="border border-gray-300 px-2 py-1">{row.naam}</td>
-            <td className="border border-gray-300 px-2 py-1">{row.mobiel}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
+  const formattedData = [
+    ["Sjabloon", "Naam", "Mobiel"], 
+    ...customers.map((row) => [row.sjabloon, row.naam, row.mobiel])
+  ];
+
+  // **Render cell-functie** om het groene vinkje correct uit te lijnen
+  const renderCell = (cell, rowIndex, cellIndex) => {
+    if (cellIndex === 0) { // Eerste kolom "Sjabloon"
+      return cell ? (
+        <div className="flex justify-center items-center h-full">
+          <span className="text-green-500 text-lg">✔</span>
+        </div>
+      ) : (
+        ""
+      );
+    }
+    return cell;
+  };
+
+  return <Table data={formattedData} renderCell={renderCell} />;
+}  
