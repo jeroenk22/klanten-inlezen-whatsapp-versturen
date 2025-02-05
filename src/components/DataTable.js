@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
+import ApprovedCustomersTable from "./ApprovedCustomersTable";
 
 export default function DataTable({ data, titleDate, onInputChange, onCopy, onReset}) {
   const [sortedColumn, setSortedColumn] = useState(null); // Huidige gesorteerde kolom
@@ -21,7 +22,14 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy, onRe
     return validFormats.some((format) => format.test(numberString));
   };
 
-  const approvedCustomers = data.slice(1).filter((row) => validateMobileNumber(row[11]));
+    // Filter goedgekeurde klanten met een geldig mobiel nummer
+    const approvedCustomers = data.slice(1)
+    .filter((row) => validateMobileNumber(row[11]))
+    .map((row) => ({
+      sjabloon: row[2] && row[2] !== "NULL" ? "✔" : "", // Zet hier het vinkje
+      naam: row[4],
+      mobiel: row[11]
+    }));
   
 
   const handleSort = (colIndex) => {
@@ -136,15 +144,9 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy, onRe
         </tbody>
       </table>
 
-            {/* Gebruik het herbruikbare Modal-component */}
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Gekwalificeerde Klanten">
-        <ul>
-          {approvedCustomers.map((row, index) => (
-            <li key={index} className="border-b py-2">
-              <span className="font-semibold">{row[4]}</span> - {row[11]}
-            </li>
-          ))}
-        </ul>
+      {/* Gebruik de generieke Modal en injecteer de tabel als children */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Gekwalificeerde Klanten">
+        <ApprovedCustomersTable customers={approvedCustomers} />
       </Modal>
     </div>
   );
