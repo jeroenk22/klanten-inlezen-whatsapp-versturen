@@ -1,13 +1,21 @@
-import { validateMobileNumber } from "./validation"; // Zorg ervoor dat we de validatie hergebruiken
+import { validateMobileNumber } from "./validation"; 
 
 export const copyInvalidNumbersToClipboard = (data, columnIndex, alertMessage) => {
   const invalidNumbers = data
     .slice(1)
-    .filter((row) => !validateMobileNumber(row[11])) // Controleer op foutieve mobiele nummers
-    .map((row) => row[columnIndex]) // Pak de juiste kolom (1 = OrderId, 2 = SjabloonId)
+    .filter((row) => !validateMobileNumber(row[11])) 
+    .map((row) => row[columnIndex])
     .join("\n");
 
   navigator.clipboard.writeText(invalidNumbers).then(() => {
+    alert(alertMessage);
+  });
+};
+
+export const copyColumnToClipboard = (data, columnIndex, alertMessage = "Gegevens gekopieerd naar klembord!") => {
+  const values = data.slice(1).map((row) => row[columnIndex]?.value || row[columnIndex]).join("\n");
+
+  navigator.clipboard.writeText(values).then(() => {
     alert(alertMessage);
   });
 };

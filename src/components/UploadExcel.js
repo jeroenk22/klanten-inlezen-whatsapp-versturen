@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import FileUploader from "./FileUploader";
 import DataTable from "./DataTable";
+import { copyColumnToClipboard } from "../utils/clipboard";
 
 export default function UploadExcel() {
   const [excelData, setExcelData] = useState([]);
@@ -26,13 +27,6 @@ export default function UploadExcel() {
     });
   };
 
-  const copyToClipboard = (columnIndex) => {
-    const values = excelData.slice(1).map((row) => row[columnIndex]?.value || row[columnIndex]).join("\n");
-    navigator.clipboard.writeText(values).then(() => {
-      alert("Gegevens gekopieerd naar klembord!");
-    });
-  };
-
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-2">Verstuur Whatsapp bericht naar mestklanten</h1>
@@ -42,7 +36,7 @@ export default function UploadExcel() {
           data={excelData}
           titleDate={formattedTitleDate}
           onInputChange={handleInputChange}
-          onCopy={copyToClipboard}
+          onCopy={(columnIndex) => copyColumnToClipboard(excelData, columnIndex)}
           onReset={handleReset} 
         />
       )}

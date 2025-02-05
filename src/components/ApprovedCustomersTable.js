@@ -22,4 +22,4 @@ export default function ApprovedCustomersTable({ customers }) {
   };
 
   return <Table data={formattedData} renderCell={renderCell} />;
-}  
+}
