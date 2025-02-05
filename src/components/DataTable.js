@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function DataTable({ data, titleDate, onInputChange, onCopy }) {
+export default function DataTable({ data, titleDate, onInputChange, onCopy, onReset}) {
   const [sortedColumn, setSortedColumn] = useState(null); // Huidige gesorteerde kolom
   const [sortDirection, setSortDirection] = useState(null); // 'asc' of 'desc'
 
@@ -79,8 +79,11 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy }) {
         <button className="mr-2 p-2 bg-red-500 text-white rounded" onClick={copyInvalidOrderNumbers}>
             Kopieer Ordernrs met foutief mobiel nummer
         </button>
-        <button className="p-2 bg-red-600 text-white rounded" onClick={copyInvalidMobileNumbers}>
+        <button className="mr-2 p-2 bg-red-600 text-white rounded" onClick={copyInvalidMobileNumbers}>
             Kopieer Sjabloonnrs met foutief mobiel nummer
+        </button>
+        <button className="p-2 bg-gray-500 text-white rounded" onClick={onReset}>
+          Reset
         </button>
     </div>
 
