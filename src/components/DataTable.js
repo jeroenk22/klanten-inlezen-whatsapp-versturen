@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import Modal from "./Modal";
 
 export default function DataTable({ data, titleDate, onInputChange, onCopy, onReset}) {
   const [sortedColumn, setSortedColumn] = useState(null); // Huidige gesorteerde kolom
   const [sortDirection, setSortDirection] = useState(null); // 'asc' of 'desc'
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const validateMobileNumber = (number) => {
     if (!number) return false; // Voorkomt fouten bij null of undefined
@@ -18,6 +20,8 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy, onRe
   
     return validFormats.some((format) => format.test(numberString));
   };
+
+  const approvedCustomers = data.slice(1).filter((row) => validateMobileNumber(row[11]));
   
 
   const handleSort = (colIndex) => {
@@ -82,8 +86,11 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy, onRe
         <button className="mr-2 p-2 bg-red-600 text-white rounded" onClick={copyInvalidMobileNumbers}>
             Kopieer Sjabloonnrs met foutief mobiel nummer
         </button>
-        <button className="p-2 bg-gray-500 text-white rounded" onClick={onReset}>
+        <button className="mr-2 p-2 bg-gray-500 text-white rounded" onClick={onReset}>
           Reset
+        </button>
+        <button className="p-2 bg-green-600 text-white rounded" onClick={() => setIsModalOpen(true)}>
+          Open WhatsApp Modal
         </button>
     </div>
 
@@ -128,6 +135,17 @@ export default function DataTable({ data, titleDate, onInputChange, onCopy, onRe
           ))}
         </tbody>
       </table>
+
+            {/* Gebruik het herbruikbare Modal-component */}
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Gekwalificeerde Klanten">
+        <ul>
+          {approvedCustomers.map((row, index) => (
+            <li key={index} className="border-b py-2">
+              <span className="font-semibold">{row[4]}</span> - {row[11]}
+            </li>
+          ))}
+        </ul>
+      </Modal>
     </div>
   );
 }
