@@ -6,11 +6,12 @@ export default function Modal({ isOpen, onClose, title, children, onConfirm }) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg w-11/12 max-w-4xl p-6 flex flex-col">
-        <div className="flex justify-between items-center mb-4">
+      <div className="bg-white rounded-lg shadow-lg w-11/12 max-w-4xl flex flex-col h-[90vh]">
+        {/* Header */}
+        <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-xl font-bold">{title}</h2>
           <button
-            onClick={onClose} // Sluit het modal
+            onClick={onClose}
             className="text-gray-500 hover:text-gray-700 focus:outline-none"
           >
             ✖
@@ -18,12 +19,10 @@ export default function Modal({ isOpen, onClose, title, children, onConfirm }) {
         </div>
 
         {/* Scrollbare inhoud */}
-        <div className="overflow-y-auto flex-1 max-h-[70vh] mb-4">
-          {children}
-        </div>
+        <div className="overflow-y-auto flex-1 p-4">{children}</div>
 
-        {/* Button onderaan */}
-        <div className="flex justify-end">
+        {/* Footer met knoppen */}
+        <div className="flex justify-end gap-4 p-4 border-t bg-white">
           <Button text="Sluiten" color="bg-red-500" onClick={onClose} />
           <Button text="Bevestigen" color="bg-green-500" onClick={onConfirm} />
         </div>
