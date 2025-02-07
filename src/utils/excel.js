@@ -23,15 +23,13 @@ export const processExcelFile = (file, onUpload) => {
 
     let data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-    // Formatteer MomentRTA datum
-    const momentRTAIndex = data[0].indexOf("MomentRTA");
-    const formattedDate =
-      momentRTAIndex !== -1 ? formatDate(data[1]?.[momentRTAIndex]) : "";
+    // Haal de index van de datumkolom op
+    const dateColumnIndex = data[0].indexOf("MomentRTA");
 
-    // Verwerk de data in aparte functies
-    const updatedData = processSheetData(data);
+    // Verwerk de ruwe data zonder te formatteren
+    const updatedData = processSheetData(data, dateColumnIndex);
 
-    onUpload(updatedData, formattedDate);
+    onUpload(updatedData);
   };
 };
 
@@ -51,7 +49,8 @@ const enforceStringValues = (sheet) => {
 /**
  * Verwerkt de Excel-sheet, hernoemt headers, verwijdert ongewenste kolommen en reinigt de cellen.
  */
-const processSheetData = (data) => {
+const processSheetData = (data, dateColumnIndex) => {
+  // Ontvangt dateColumnIndex
   return data.map((row, index) => {
     if (index === 0) {
       return [
@@ -59,6 +58,7 @@ const processSheetData = (data) => {
         ...row
           .map(renameHeader)
           .filter((header) => !UNWANTED_COLUMNS.includes(header)),
+        "Datum", // Zorg dat de header correct wordt hernoemd
       ];
     }
     return [
@@ -66,6 +66,7 @@ const processSheetData = (data) => {
       ...row
         .map((cell, i) => cleanCell(cell, data[0][i])) // Verwerk elke cel
         .filter((_, i) => !UNWANTED_COLUMNS.includes(data[0][i])), // Verwijder ongewenste kolommen
+      row[dateColumnIndex] || "", // Sla de ruwe datum op zonder formattering
     ];
   });
 };
@@ -88,18 +89,4 @@ export const cleanCell = (cell, columnName) => {
     return cell.replace(/^'+/, "").replace(/'+$/, "").trim();
   }
   return cell;
-};
-
-/**
- * Converteert een datumstring naar een geformatteerde datum in NL-stijl.
- */
-export const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("nl-NL", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
 };

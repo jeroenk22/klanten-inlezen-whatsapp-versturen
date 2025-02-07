@@ -6,6 +6,7 @@ import Table from "./Table";
 import MobileInput from "./MobileInput";
 import { validateMobileNumber } from "../utils/validation";
 import { copyInvalidNumbersToClipboard } from "../utils/clipboard";
+import { formatDate } from "../utils/dateUtils";
 
 export default function DataTable({
   data,
@@ -16,6 +17,21 @@ export default function DataTable({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedData, setUpdatedData] = useState(data);
+
+  // ✅ Zoek de eerste rij met een geldige datum (vanaf rij 1, niet de headers!)
+  const firstValidRow = updatedData
+    .slice(1)
+    .find((row) => row[14] && row[14] !== "Datum");
+
+  // Formatteer de datum als deze bestaat
+  const displayDate = firstValidRow
+    ? formatDate(firstValidRow[14])
+    : "Geen datum beschikbaar";
+
+  // Verwijder de "Datum"-kolom uit de tabel voordat deze wordt doorgegeven aan Table.js
+  const filteredData = data.map((row) =>
+    row.filter((_, index) => data[0][index] !== "Datum")
+  );
 
   // Update de mobiele nummers in de data state
   const handleInputChange = (rowIndex, newValue) => {
@@ -35,6 +51,7 @@ export default function DataTable({
       naam: row[4],
       plaats: row[7],
       mobiel: row[11],
+      datum: row[14] || "",
     }));
 
   // **Nieuwe renderCell-functie** om cellen dynamisch weer te geven
@@ -55,7 +72,7 @@ export default function DataTable({
   return (
     <div className="mt-4 border p-2">
       <h2 className="text-lg font-semibold">
-        Mestklanten Eurofins {titleDate}
+        Mestklanten Eurofins {displayDate}
       </h2>
 
       <div className="mb-2">
@@ -105,7 +122,8 @@ export default function DataTable({
       </div>
 
       <Table
-        data={updatedData}
+        data={filteredData}
+        onInputChange={onInputChange}
         renderCell={renderCell} // Geef de custom render functie mee
         headerStyles={[
           { width: "45px" }, // Specifieke breedte voor "#"
