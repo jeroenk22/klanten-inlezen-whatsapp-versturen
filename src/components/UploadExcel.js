@@ -29,15 +29,19 @@ export default function UploadExcel() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-2">Verstuur Whatsapp bericht naar mestklanten</h1>
+      <h1 className="text-xl font-bold mb-2">
+        Verstuur Whatsapp bericht naar mestklanten
+      </h1>
       <FileUploader onUpload={handleFileUpload} key={fileKey} />
       {excelData.length > 0 && (
         <DataTable
           data={excelData}
           titleDate={formattedTitleDate}
           onInputChange={handleInputChange}
-          onCopy={(columnIndex) => copyColumnToClipboard(excelData, columnIndex)}
-          onReset={handleReset} 
+          onCopy={(columnIndex) =>
+            copyColumnToClipboard(excelData, columnIndex)
+          }
+          onReset={handleReset}
         />
       )}
     </div>

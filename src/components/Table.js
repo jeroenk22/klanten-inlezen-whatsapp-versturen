@@ -7,7 +7,8 @@ export default function Table({ data, renderCell }) {
   if (!data || data.length === 0) return <p>Geen data beschikbaar.</p>;
 
   const handleSort = (colIndex) => {
-    const direction = sortedColumn === colIndex && sortDirection === "asc" ? "desc" : "asc";
+    const direction =
+      sortedColumn === colIndex && sortDirection === "asc" ? "desc" : "asc";
     setSortedColumn(colIndex);
     setSortDirection(direction);
 
@@ -34,7 +35,9 @@ export default function Table({ data, renderCell }) {
               onClick={() => handleSort(colIndex)}
             >
               {header}{" "}
-              {sortedColumn === colIndex && <span>{sortDirection === "asc" ? "▲" : "▼"}</span>}
+              {sortedColumn === colIndex && (
+                <span>{sortDirection === "asc" ? "▲" : "▼"}</span>
+              )}
             </th>
           ))}
         </tr>

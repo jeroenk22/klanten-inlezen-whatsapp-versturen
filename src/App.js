@@ -1,6 +1,6 @@
 import React from "react";
 import UploadExcel from "./components/UploadExcel";
-import './styles.css';
+import "./styles.css";
 
 function App() {
   return (

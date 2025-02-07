@@ -1,5 +1,9 @@
 import * as XLSX from "xlsx";
-import { HEADER_MAPPINGS, UNWANTED_COLUMNS, SPECIAL_CLEAN_COLUMNS } from "./constants";
+import {
+  HEADER_MAPPINGS,
+  UNWANTED_COLUMNS,
+  SPECIAL_CLEAN_COLUMNS,
+} from "./constants";
 
 export const processExcelFile = (file, onUpload) => {
   if (!file) return;
@@ -7,7 +11,11 @@ export const processExcelFile = (file, onUpload) => {
   const reader = new FileReader();
   reader.readAsBinaryString(file);
   reader.onload = (e) => {
-    const workbook = XLSX.read(e.target.result, { type: "binary", cellText: false, cellDates: true });
+    const workbook = XLSX.read(e.target.result, {
+      type: "binary",
+      cellText: false,
+      cellDates: true,
+    });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
 
@@ -17,7 +25,8 @@ export const processExcelFile = (file, onUpload) => {
 
     // Formatteer MomentRTA datum
     const momentRTAIndex = data[0].indexOf("MomentRTA");
-    const formattedDate = momentRTAIndex !== -1 ? formatDate(data[1]?.[momentRTAIndex]) : "";
+    const formattedDate =
+      momentRTAIndex !== -1 ? formatDate(data[1]?.[momentRTAIndex]) : "";
 
     // Verwerk de data in aparte functies
     const updatedData = processSheetData(data);
@@ -45,13 +54,18 @@ const enforceStringValues = (sheet) => {
 const processSheetData = (data) => {
   return data.map((row, index) => {
     if (index === 0) {
-      return ["#", ...row.map(renameHeader).filter((header) => !UNWANTED_COLUMNS.includes(header))];
+      return [
+        "#",
+        ...row
+          .map(renameHeader)
+          .filter((header) => !UNWANTED_COLUMNS.includes(header)),
+      ];
     }
     return [
       index,
       ...row
         .map((cell, i) => cleanCell(cell, data[0][i])) // Verwerk elke cel
-        .filter((_, i) => !UNWANTED_COLUMNS.includes(data[0][i])) // Verwijder ongewenste kolommen
+        .filter((_, i) => !UNWANTED_COLUMNS.includes(data[0][i])), // Verwijder ongewenste kolommen
     ];
   });
 };
@@ -66,7 +80,11 @@ export const renameHeader = (header) => HEADER_MAPPINGS[header] || header;
  */
 export const cleanCell = (cell, columnName) => {
   if (cell === "NULL") return "";
-  if (typeof cell === "string" && columnName && SPECIAL_CLEAN_COLUMNS.includes(columnName)) {
+  if (
+    typeof cell === "string" &&
+    columnName &&
+    SPECIAL_CLEAN_COLUMNS.includes(columnName)
+  ) {
     return cell.replace(/^'+/, "").replace(/'+$/, "").trim();
   }
   return cell;
@@ -78,5 +96,10 @@ export const cleanCell = (cell, columnName) => {
 export const formatDate = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
-  return date.toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  return date.toLocaleDateString("nl-NL", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 };
