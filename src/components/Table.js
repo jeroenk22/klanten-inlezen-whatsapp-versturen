@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function Table({ data, renderCell }) {
+export default function Table({ data, renderCell, headerStyles = [] }) {
   const [sortedColumn, setSortedColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
 
@@ -33,6 +33,7 @@ export default function Table({ data, renderCell }) {
               key={colIndex}
               className="border border-gray-300 px-2 py-1 text-left bg-gray-200 cursor-pointer hover:bg-gray-300"
               onClick={() => handleSort(colIndex)}
+              style={headerStyles[colIndex]}
             >
               {header}{" "}
               {sortedColumn === colIndex && (

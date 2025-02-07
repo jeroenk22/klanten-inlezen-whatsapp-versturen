@@ -33,6 +33,7 @@ export default function DataTable({
     .map((row) => ({
       sjabloon: row[2] && row[2] !== "NULL" ? "✔" : "",
       naam: row[4],
+      plaats: row[7],
       mobiel: row[11],
     }));
 
@@ -106,6 +107,9 @@ export default function DataTable({
       <Table
         data={updatedData}
         renderCell={renderCell} // Geef de custom render functie mee
+        headerStyles={[
+          { width: "45px" }, // Specifieke breedte voor "#"
+        ]}
       />
 
       <Modal
