@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import ApprovedCustomersTable from "./ApprovedCustomersTable";
 import Button from "./Button";
 import Table from "./Table";
+import MobileInput from "./MobileInput";
 import { validateMobileNumber } from "../utils/validation";
 import { copyInvalidNumbersToClipboard } from "../utils/clipboard";
 
@@ -30,15 +31,9 @@ export default function DataTable({
     if (cellIndex === 11) {
       // Alleen voor de Mobiel-kolom (index 11)
       return (
-        <input
-          type="text"
+        <MobileInput
           value={cell.value || cell}
-          className={`w-full border px-1 ${
-            validateMobileNumber(cell.value || cell)
-              ? "border-green-500"
-              : "border-red-500"
-          }`}
-          onChange={(e) => onInputChange(rowIndex + 1, e.target.value)}
+          onChange={(newValue) => onInputChange(rowIndex + 1, newValue)}
         />
       );
     }
