@@ -15,9 +15,19 @@ export default function DataTable({
   onReset,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [updatedData, setUpdatedData] = useState(data);
+
+  // Update de mobiele nummers in de data state
+  const handleInputChange = (rowIndex, newValue) => {
+    setUpdatedData((prevData) => {
+      const newData = [...prevData]; // Maak een kopie van de huidige data
+      newData[rowIndex][11] = newValue; // Werk de juiste rij en kolom bij
+      return newData; // Return de nieuwe data
+    });
+  };
 
   // Filter goedgekeurde klanten met een geldig mobiel nummer
-  const approvedCustomers = data
+  const approvedCustomers = updatedData
     .slice(1)
     .filter((row) => validateMobileNumber(row[11]))
     .map((row) => ({
@@ -29,15 +39,16 @@ export default function DataTable({
   // **Nieuwe renderCell-functie** om cellen dynamisch weer te geven
   const renderCell = (cell, rowIndex, cellIndex) => {
     if (cellIndex === 11) {
-      // Alleen voor de Mobiel-kolom (index 11)
+      // Alleen voor de Mobiel-kolom
+      const actualRowIndex = rowIndex + 1; // +1 om de header rij te compenseren
       return (
         <MobileInput
           value={cell.value || cell}
-          onChange={(newValue) => onInputChange(rowIndex + 1, newValue)}
+          onChange={(newValue) => handleInputChange(actualRowIndex, newValue)} // Gebruik de juiste index
         />
       );
     }
-    return cell;
+    return cell; // Andere cellen worden ongewijzigd geretourneerd
   };
 
   return (
@@ -93,7 +104,7 @@ export default function DataTable({
       </div>
 
       <Table
-        data={data}
+        data={updatedData}
         renderCell={renderCell} // Geef de custom render functie mee
       />
 
