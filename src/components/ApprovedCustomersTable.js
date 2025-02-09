@@ -11,23 +11,27 @@ export default function ApprovedCustomersTable({
 }) {
   const [message, setMessage] = useState('');
   const [filter, setFilter] = useState('all'); // "all", "templates", "orders"
+  const isUserEditing = useRef(false); // Houd bij of de gebruiker het bericht heeft aangepast
 
   // Zoek de eerste beschikbare datum om het standaardbericht te genereren
   useEffect(() => {
-    const firstValidCustomer = customers.find(
-      (c) => c.datum && c.datum.trim() !== ''
-    );
-    if (firstValidCustomer) {
-      const initialMessage = generateMessage(firstValidCustomer.datum);
-      setMessage(initialMessage);
-      if (onMessageChange) {
-        onMessageChange(initialMessage);
+    if (!isUserEditing.current) {
+      const firstValidCustomer = customers.find(
+        (c) => c.datum && c.datum.trim() !== ''
+      );
+      if (firstValidCustomer) {
+        const initialMessage = generateMessage(firstValidCustomer.datum);
+        setMessage(initialMessage);
+        if (onMessageChange) {
+          onMessageChange(initialMessage);
+        }
       }
     }
   }, [customers, onMessageChange]);
 
   // Update de parent als de boodschap wordt gewijzigd
   const handleMessageChange = (newMessage) => {
+    isUserEditing.current = true; // Markeer dat de gebruiker het handmatig heeft aangepast
     setMessage(newMessage);
     if (onMessageChange) {
       onMessageChange(newMessage);
