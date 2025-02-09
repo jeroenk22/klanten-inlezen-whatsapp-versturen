@@ -55,8 +55,13 @@ export default function DataTable({
       (customer) => `${customer.naam}: ${customer.mobiel}`
     );
 
+    // ✅ Encodeer de message correct
+    const encodedMessage = encodeURIComponent(message);
+
+    console.log(encodedMessage);
+
     alert(
-      `Te verzenden bericht:\n\n${message}\n\nKlanten:\n${visibleData.join(
+      `Te verzenden bericht (gecodeerd):\n\n${encodedMessage}\n\nKlanten:\n${visibleData.join(
         '\n'
       )}`
     );
