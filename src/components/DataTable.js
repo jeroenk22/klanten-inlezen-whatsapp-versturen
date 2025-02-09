@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import Modal from "./Modal";
-import ApprovedCustomersTable from "./ApprovedCustomersTable";
-import Button from "./Button";
-import Table from "./Table";
-import MobileInput from "./MobileInput";
-import { validateMobileNumber } from "../utils/validation";
-import { copyInvalidNumbersToClipboard } from "../utils/clipboard";
-import { formatDate } from "../utils/dateUtils";
+import React, { useState } from 'react';
+import Modal from './Modal';
+import ApprovedCustomersTable from './ApprovedCustomersTable';
+import Button from './Button';
+import Table from './Table';
+import MobileInput from './MobileInput';
+import { validateMobileNumber } from '../utils/validation';
+import { copyInvalidNumbersToClipboard } from '../utils/clipboard';
+import { formatDate } from '../utils/dateUtils';
 
 export default function DataTable({
   data,
@@ -17,125 +17,142 @@ export default function DataTable({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedData, setUpdatedData] = useState(data);
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
+  const [message, setMessage] = useState(''); // ✅ Houd de boodschap bij
 
-  // ✅ Zoek de eerste rij met een geldige datum (vanaf rij 1, niet de headers!)
   const firstValidRow = updatedData
     .slice(1)
-    .find((row) => row[14] && row[14] !== "Datum");
-
-  // Formatteer de datum als deze bestaat
+    .find((row) => row[14] && row[14] !== 'Datum');
   const displayDate = firstValidRow
     ? formatDate(firstValidRow[14])
-    : "Geen datum beschikbaar";
+    : 'Geen datum beschikbaar';
 
-  // Verwijder de "Datum"-kolom uit de tabel voordat deze wordt doorgegeven aan Table.js
   const filteredData = data.map((row) =>
-    row.filter((_, index) => data[0][index] !== "Datum")
+    row.filter((_, index) => data[0][index] !== 'Datum')
   );
 
-  // Update de mobiele nummers in de data state
   const handleInputChange = (rowIndex, newValue) => {
     setUpdatedData((prevData) => {
-      const newData = [...prevData]; // Maak een kopie van de huidige data
-      newData[rowIndex][11] = newValue; // Werk de juiste rij en kolom bij
-      return newData; // Return de nieuwe data
+      const newData = [...prevData];
+      newData[rowIndex][11] = newValue;
+      return newData;
     });
   };
 
-  // Filter goedgekeurde klanten met een geldig mobiel nummer
   const approvedCustomers = updatedData
     .slice(1)
     .filter((row) => validateMobileNumber(row[11]))
     .map((row) => ({
-      sjabloon: row[2] && row[2] !== "NULL" ? "✔" : "",
+      sjabloon: row[2] && row[2] !== 'NULL' ? '✔' : '',
       naam: row[4],
       plaats: row[7],
       mobiel: row[11],
-      datum: row[14] || "",
+      datum: row[14] || '',
     }));
 
-  // **Nieuwe renderCell-functie** om cellen dynamisch weer te geven
+  const handleConfirm = () => {
+    const visibleData = filteredCustomers.map(
+      (customer) => `${customer.naam}: ${customer.mobiel}`
+    );
+
+    alert(
+      `Te verzenden bericht:\n\n${message}\n\nKlanten:\n${visibleData.join(
+        '\n'
+      )}`
+    );
+  };
+
   const renderCell = (cell, rowIndex, cellIndex) => {
     if (cellIndex === 11) {
-      // Alleen voor de Mobiel-kolom
-      const actualRowIndex = rowIndex + 1; // +1 om de header rij te compenseren
+      const actualRowIndex = rowIndex + 1;
       return (
         <MobileInput
           value={cell.value || cell}
-          onChange={(newValue) => handleInputChange(actualRowIndex, newValue)} // Gebruik de juiste index
+          onChange={(newValue) => handleInputChange(actualRowIndex, newValue)}
         />
       );
     }
-    return cell; // Andere cellen worden ongewijzigd geretourneerd
+    return cell;
   };
 
   return (
-    <div className="mt-4 border p-2">
-      <h2 className="text-lg font-semibold">
+    <div className='mt-4 border p-2'>
+      <h2 className='text-lg font-semibold'>
         Mestklanten Eurofins {displayDate}
       </h2>
 
-      <div className="mb-2">
+      <div className='mb-2'>
         <Button
           onClick={() => onCopy(1)}
-          text="Kopieer Ordernrs"
-          color="bg-blue-500"
+          text='Kopieer Ordernrs'
+          color='bg-blue-500'
         />
         <Button
           onClick={() => onCopy(2)}
-          text="Kopieer Sjabloonnrs"
-          color="bg-green-500"
+          text='Kopieer Sjabloonnrs'
+          color='bg-green-500'
         />
         <Button
           onClick={() => onCopy(3)}
-          text="Kopieer Taaknrs"
-          color="bg-yellow-500"
+          text='Kopieer Taaknrs'
+          color='bg-yellow-500'
         />
         <Button
           onClick={() =>
             copyInvalidNumbersToClipboard(
               data,
               1,
-              "Ordernummers met foutieve mobiele nummers gekopieerd naar klembord!"
+              'Ordernummers met foutieve mobiele nummers gekopieerd naar klembord!'
             )
           }
-          text="Kopieer Ordernrs met foutief mobiel nummer"
-          color="bg-red-500"
+          text='Kopieer Ordernrs met foutief mobiel nummer'
+          color='bg-red-500'
         />
         <Button
           onClick={() =>
             copyInvalidNumbersToClipboard(
               data,
               2,
-              "Sjabloonnrs met foutieve mobiele nummers gekopieerd naar klembord!"
+              'Sjabloonnrs met foutieve mobiele nummers gekopieerd naar klembord!'
             )
           }
-          text="Kopieer Sjabloonnrs met foutief mobiel nummer"
-          color="bg-red-600"
+          text='Kopieer Sjabloonnrs met foutief mobiel nummer'
+          color='bg-red-600'
         />
-        <Button onClick={onReset} text="Reset" color="bg-gray-500" />
+        <Button onClick={onReset} text='Reset' color='bg-gray-500' />
         <Button
           onClick={() => setIsModalOpen(true)}
-          text="Open WhatsApp Modal"
-          color="bg-green-600"
+          text='Open WhatsApp Modal'
+          color='bg-green-600'
         />
       </div>
 
       <Table
         data={filteredData}
         onInputChange={onInputChange}
-        renderCell={renderCell} // Geef de custom render functie mee
-        headerStyles={[
-          { width: "45px" }, // Specifieke breedte voor "#"
-        ]}
+        renderCell={renderCell}
+        headerStyles={[{ width: '45px' }]}
       />
 
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Gekwalificeerde Klanten"
+        title='Gekwalificeerde Klanten'
+        onConfirm={handleConfirm}
+        footerButtons={[
+          {
+            text: 'Sluiten',
+            color: 'bg-red-500',
+            onClick: () => setIsModalOpen(false),
+          },
+          { text: 'Bevestigen', color: 'bg-green-500', onClick: handleConfirm },
+        ]}
       >
-        <ApprovedCustomersTable customers={approvedCustomers} />
+        <ApprovedCustomersTable
+          customers={approvedCustomers}
+          onFilterChange={setFilteredCustomers}
+          onMessageChange={setMessage} // ✅ Houd de boodschap bij
+        />
       </Modal>
     </div>
   );
