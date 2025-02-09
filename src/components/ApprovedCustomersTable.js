@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Table from './Table';
 import Textarea from './Textarea';
 import Button from './Button';
@@ -34,23 +34,28 @@ export default function ApprovedCustomersTable({
     }
   };
 
-  // Filter de klantenlijst op basis van de geselecteerde optie
-  const filteredCustomers = customers.filter((customer) => {
-    if (filter === 'templates') return customer.sjabloon; // Alleen sjablonen
-    if (filter === 'orders') return !customer.sjabloon; // Alleen losse orders
-    return true; // Standaard: Toon alle klanten
-  });
+  // Gebruik useMemo om `filteredCustomers` stabiel te houden
+  const filteredCustomers = useMemo(() => {
+    return customers.filter((customer) => {
+      if (filter === 'templates') return customer.sjabloon;
+      if (filter === 'orders') return !customer.sjabloon;
+      return true;
+    });
+  }, [customers, filter]);
 
   // Zet de gefilterde data om naar een tabelstructuur
-  const tableData = [
-    ['Sjabloon', 'Naam', 'Plaats', 'Mobiel'],
-    ...filteredCustomers.map(({ sjabloon, naam, plaats, mobiel }) => [
-      sjabloon,
-      naam,
-      plaats,
-      mobiel,
-    ]),
-  ];
+  const tableData = useMemo(
+    () => [
+      ['Sjabloon', 'Naam', 'Plaats', 'Mobiel'],
+      ...filteredCustomers.map(({ sjabloon, naam, plaats, mobiel }) => [
+        sjabloon,
+        naam,
+        plaats,
+        mobiel,
+      ]),
+    ],
+    [filteredCustomers]
+  );
 
   // Render cell-functie voor het groene vinkje in de "Sjabloon"-kolom
   const renderCell = (cell, rowIndex, cellIndex) => {
@@ -73,11 +78,19 @@ export default function ApprovedCustomersTable({
     return cell; // Andere cellen blijven ongewijzigd
   };
 
+  // Gebruik useRef om onnodige updates te voorkomen
+  const prevFilteredCustomers = useRef([]);
+
   useEffect(() => {
-    if (onFilterChange) {
+    if (
+      onFilterChange &&
+      JSON.stringify(prevFilteredCustomers.current) !==
+        JSON.stringify(filteredCustomers)
+    ) {
       onFilterChange(filteredCustomers);
+      prevFilteredCustomers.current = filteredCustomers;
     }
-  }, [filter, filteredCustomers, onFilterChange]);
+  }, [filteredCustomers, onFilterChange]);
 
   return (
     <div className='flex flex-col h-full'>
