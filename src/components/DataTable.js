@@ -142,7 +142,7 @@ export default function DataTable({
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title='Gekwalificeerde Klanten'
+        title='WhatsApp bericht sturen'
         onConfirm={handleConfirm}
         footerButtons={[
           {
