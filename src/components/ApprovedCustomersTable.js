@@ -4,7 +4,7 @@ import Textarea from "./Textarea";
 import { FilterButtons } from "../components/FilterButtons";
 import { generateMessage } from "../utils/messageTemplate";
 import { renderCell } from "../utils/tableUtils";
-import formatMobileNumber from "../utils/formatMobileNumber";
+import { formatTableData } from "../utils/tableUtils";
 
 export default function ApprovedCustomersTable({
   customers,
@@ -74,25 +74,15 @@ function MessageInput({ value, onChange }) {
 
 function CustomerTable({ customers }) {
   const tableData = useMemo(
-    () => [
-      ["Sjabloon", "Naam", "Plaats", "Mobiel"],
-      ...customers.map(({ sjabloon, naam, plaats, mobiel }) => [
-        sjabloon,
-        naam,
-        plaats,
-        formatMobileNumber(mobiel),
-      ]),
-    ],
+    () => formatTableData(customers, ["Sjabloon", "Naam", "Plaats", "Mobiel"]),
     [customers]
   );
 
   return (
-    <div className="flex-grow overflow-y-auto max-h-[60vh] border-b">
-      <Table
-        data={tableData}
-        renderCell={renderCell}
-        headerStyles={[{ width: "92px" }]}
-      />
-    </div>
+    <Table
+      data={tableData}
+      renderCell={renderCell}
+      headerStyles={[{ width: "92px" }]}
+    />
   );
 }

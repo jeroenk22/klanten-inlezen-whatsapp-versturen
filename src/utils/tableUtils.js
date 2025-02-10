@@ -1,4 +1,5 @@
 import MobileInput from "../components/MobileInput";
+import formatMobileNumber from "../utils/formatMobileNumber";
 
 export function renderCell(cell, rowIndex, cellIndex, handleInputChange) {
   if (cellIndex === 0) {
@@ -24,4 +25,16 @@ export function renderCell(cell, rowIndex, cellIndex, handleInputChange) {
   }
 
   return cell;
+}
+
+export function formatTableData(customers, headers) {
+  return [
+    headers,
+    ...customers.map(({ sjabloon, naam, plaats, mobiel }) => [
+      sjabloon,
+      naam,
+      plaats,
+      formatMobileNumber(mobiel),
+    ]),
+  ];
 }

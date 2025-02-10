@@ -10,13 +10,7 @@ import formatMobileNumber from "../utils/formatMobileNumber";
 import { sendMessage } from "../utils/sendMessage";
 import { renderCell } from "../utils/tableUtils";
 
-export default function DataTable({
-  data,
-  titleDate,
-  onInputChange,
-  onCopy,
-  onReset,
-}) {
+export default function DataTable({ data, onInputChange, onCopy, onReset }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedData, setUpdatedData] = useState(data);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
@@ -61,13 +55,17 @@ export default function DataTable({
     const encodedMessage = message;
 
     try {
-      // Maak een array van promises (1 request per klant)
-      const sendRequests = filteredCustomers.map((customer) =>
-        sendMessage(encodedMessage, formatMobileNumber(customer.mobiel))
-      );
+      for (const customer of filteredCustomers) {
+        await sendMessage(encodedMessage, formatMobileNumber(customer.mobiel));
+        console.log(
+          `Bericht verzonden naar ${customer.naam}: ${formatMobileNumber(
+            customer.mobiel
+          )}`
+        );
 
-      // Wacht tot alle berichten zijn verstuurd
-      const responses = await Promise.all(sendRequests);
+        // 10 seconden vertraging voordat het volgende bericht wordt verzonden
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+      }
 
       // Maak een lijst van verzonden berichten
       const sentCustomersList = filteredCustomers
@@ -80,25 +78,11 @@ export default function DataTable({
       alert(
         `Berichten succesvol verzonden naar ${filteredCustomers.length} klanten!\n\n${sentCustomersList}`
       );
-      console.log("API Responses:", responses);
     } catch (error) {
       alert("Er is een fout opgetreden bij het verzenden van de berichten.");
       console.error(error);
     }
   };
-
-  // const renderCell = (cell, rowIndex, cellIndex) => {
-  //   if (cellIndex === 11) {
-  //     const actualRowIndex = rowIndex + 1;
-  //     return (
-  //       <MobileInput
-  //         value={cell.value || cell}
-  //         onChange={(newValue) => handleInputChange(actualRowIndex, newValue)}
-  //       />
-  //     );
-  //   }
-  //   return cell;
-  // };
 
   return (
     <div className="mt-4 border p-2">
