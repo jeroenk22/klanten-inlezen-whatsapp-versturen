@@ -1,23 +1,24 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import Table from './Table';
-import Textarea from './Textarea';
-import { generateMessage } from '../utils/messageTemplate';
-import { renderCell } from '../utils/tableUtils';
-import { FilterButtons } from '../components/FilterButtons';
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import Table from "./Table";
+import Textarea from "./Textarea";
+import { FilterButtons } from "../components/FilterButtons";
+import { generateMessage } from "../utils/messageTemplate";
+import { renderCell } from "../utils/tableUtils";
+import formatMobileNumber from "../utils/formatMobileNumber";
 
 export default function ApprovedCustomersTable({
   customers,
   onFilterChange,
   onMessageChange,
 }) {
-  const [message, setMessage] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [message, setMessage] = useState("");
+  const [filter, setFilter] = useState("all");
   const isUserEditing = useRef(false);
   const prevFilteredCustomers = useRef([]);
 
   useEffect(() => {
     if (!isUserEditing.current) {
-      const firstValidCustomer = customers.find((c) => c.datum?.trim() !== '');
+      const firstValidCustomer = customers.find((c) => c.datum?.trim() !== "");
       if (firstValidCustomer) {
         const initialMessage = generateMessage(firstValidCustomer.datum);
         setMessage(initialMessage);
@@ -34,8 +35,8 @@ export default function ApprovedCustomersTable({
 
   const filteredCustomers = useMemo(() => {
     return customers.filter((customer) => {
-      if (filter === 'templates') return customer.sjabloon;
-      if (filter === 'orders') return !customer.sjabloon;
+      if (filter === "templates") return customer.sjabloon;
+      if (filter === "orders") return !customer.sjabloon;
       return true;
     });
   }, [customers, filter]);
@@ -52,7 +53,7 @@ export default function ApprovedCustomersTable({
   }, [filteredCustomers, onFilterChange]);
 
   return (
-    <div className='flex flex-col h-full'>
+    <div className="flex flex-col h-full">
       <MessageInput value={message} onChange={handleMessageChange} />
       <CustomerTable customers={filteredCustomers} />
       <FilterButtons filter={filter} setFilter={setFilter} />
@@ -63,10 +64,10 @@ export default function ApprovedCustomersTable({
 function MessageInput({ value, onChange }) {
   return (
     <Textarea
-      label='Te verzenden bericht'
+      label="Te verzenden bericht"
       value={value}
       onChange={onChange}
-      placeholder='Type hier je bericht...'
+      placeholder="Type hier je bericht..."
     />
   );
 }
@@ -74,23 +75,23 @@ function MessageInput({ value, onChange }) {
 function CustomerTable({ customers }) {
   const tableData = useMemo(
     () => [
-      ['Sjabloon', 'Naam', 'Plaats', 'Mobiel'],
+      ["Sjabloon", "Naam", "Plaats", "Mobiel"],
       ...customers.map(({ sjabloon, naam, plaats, mobiel }) => [
         sjabloon,
         naam,
         plaats,
-        mobiel,
+        formatMobileNumber(mobiel),
       ]),
     ],
     [customers]
   );
 
   return (
-    <div className='flex-grow overflow-y-auto max-h-[60vh] border-b'>
+    <div className="flex-grow overflow-y-auto max-h-[60vh] border-b">
       <Table
         data={tableData}
         renderCell={renderCell}
-        headerStyles={[{ width: '92px' }]}
+        headerStyles={[{ width: "92px" }]}
       />
     </div>
   );

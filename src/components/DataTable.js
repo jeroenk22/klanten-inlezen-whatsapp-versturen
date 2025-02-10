@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import Modal from './Modal';
-import ApprovedCustomersTable from './ApprovedCustomersTable';
-import Button from './Button';
-import Table from './Table';
-import MobileInput from './MobileInput';
-import { validateMobileNumber } from '../utils/validation';
-import { copyInvalidNumbersToClipboard } from '../utils/clipboard';
-import { formatDate } from '../utils/dateUtils';
+import React, { useState } from "react";
+import Modal from "./Modal";
+import ApprovedCustomersTable from "./ApprovedCustomersTable";
+import Button from "./Button";
+import Table from "./Table";
+import MobileInput from "./MobileInput";
+import { validateMobileNumber } from "../utils/validation";
+import { copyInvalidNumbersToClipboard } from "../utils/clipboard";
+import { formatDate } from "../utils/dateUtils";
+import formatMobileNumber from "../utils/formatMobileNumber";
 
 export default function DataTable({
   data,
@@ -18,17 +19,17 @@ export default function DataTable({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedData, setUpdatedData] = useState(data);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
-  const [message, setMessage] = useState(''); // ✅ Houd de boodschap bij
+  const [message, setMessage] = useState(""); // ✅ Houd de boodschap bij
 
   const firstValidRow = updatedData
     .slice(1)
-    .find((row) => row[14] && row[14] !== 'Datum');
+    .find((row) => row[14] && row[14] !== "Datum");
   const displayDate = firstValidRow
     ? formatDate(firstValidRow[14])
-    : 'Geen datum beschikbaar';
+    : "Geen datum beschikbaar";
 
   const filteredData = data.map((row) =>
-    row.filter((_, index) => data[0][index] !== 'Datum')
+    row.filter((_, index) => data[0][index] !== "Datum")
   );
 
   const handleInputChange = (rowIndex, newValue) => {
@@ -43,16 +44,16 @@ export default function DataTable({
     .slice(1)
     .filter((row) => validateMobileNumber(row[11]))
     .map((row) => ({
-      sjabloon: row[2] && row[2] !== 'NULL' ? '✔' : '',
+      sjabloon: row[2] && row[2] !== "NULL" ? "✔" : "",
       naam: row[4],
       plaats: row[7],
       mobiel: row[11],
-      datum: row[14] || '',
+      datum: row[14] || "",
     }));
 
   const handleConfirm = () => {
     const visibleData = filteredCustomers.map(
-      (customer) => `${customer.naam}: ${customer.mobiel}`
+      (customer) => `${customer.naam}: ${formatMobileNumber(customer.mobiel)}`
     );
 
     // ✅ Encodeer de message correct
@@ -62,7 +63,7 @@ export default function DataTable({
 
     alert(
       `Te verzenden bericht (gecodeerd):\n\n${encodedMessage}\n\nKlanten:\n${visibleData.join(
-        '\n'
+        "\n"
       )}`
     );
   };
@@ -81,54 +82,54 @@ export default function DataTable({
   };
 
   return (
-    <div className='mt-4 border p-2'>
-      <h2 className='text-lg font-semibold'>
+    <div className="mt-4 border p-2">
+      <h2 className="text-lg font-semibold">
         Mestklanten Eurofins {displayDate}
       </h2>
 
-      <div className='mb-2'>
+      <div className="mb-2">
         <Button
           onClick={() => onCopy(1)}
-          text='Kopieer Ordernrs'
-          color='bg-blue-500'
+          text="Kopieer Ordernrs"
+          color="bg-blue-500"
         />
         <Button
           onClick={() => onCopy(2)}
-          text='Kopieer Sjabloonnrs'
-          color='bg-green-500'
+          text="Kopieer Sjabloonnrs"
+          color="bg-green-500"
         />
         <Button
           onClick={() => onCopy(3)}
-          text='Kopieer Taaknrs'
-          color='bg-yellow-500'
+          text="Kopieer Taaknrs"
+          color="bg-yellow-500"
         />
         <Button
           onClick={() =>
             copyInvalidNumbersToClipboard(
               data,
               1,
-              'Ordernummers met foutieve mobiele nummers gekopieerd naar klembord!'
+              "Ordernummers met foutieve mobiele nummers gekopieerd naar klembord!"
             )
           }
-          text='Kopieer Ordernrs met foutief mobiel nummer'
-          color='bg-red-500'
+          text="Kopieer Ordernrs met foutief mobiel nummer"
+          color="bg-red-500"
         />
         <Button
           onClick={() =>
             copyInvalidNumbersToClipboard(
               data,
               2,
-              'Sjabloonnrs met foutieve mobiele nummers gekopieerd naar klembord!'
+              "Sjabloonnrs met foutieve mobiele nummers gekopieerd naar klembord!"
             )
           }
-          text='Kopieer Sjabloonnrs met foutief mobiel nummer'
-          color='bg-red-600'
+          text="Kopieer Sjabloonnrs met foutief mobiel nummer"
+          color="bg-red-600"
         />
-        <Button onClick={onReset} text='Reset' color='bg-gray-500' />
+        <Button onClick={onReset} text="Reset" color="bg-gray-500" />
         <Button
           onClick={() => setIsModalOpen(true)}
-          text='Open WhatsApp Modal'
-          color='bg-green-600'
+          text="Open WhatsApp Modal"
+          color="bg-green-600"
         />
       </div>
 
@@ -136,21 +137,21 @@ export default function DataTable({
         data={filteredData}
         onInputChange={onInputChange}
         renderCell={renderCell}
-        headerStyles={[{ width: '45px' }]}
+        headerStyles={[{ width: "45px" }]}
       />
 
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title='WhatsApp bericht sturen'
+        title="WhatsApp bericht sturen"
         onConfirm={handleConfirm}
         footerButtons={[
           {
-            text: 'Sluiten',
-            color: 'bg-red-500',
+            text: "Sluiten",
+            color: "bg-red-500",
             onClick: () => setIsModalOpen(false),
           },
-          { text: 'Bevestigen', color: 'bg-green-500', onClick: handleConfirm },
+          { text: "Bevestigen", color: "bg-green-500", onClick: handleConfirm },
         ]}
       >
         <ApprovedCustomersTable
