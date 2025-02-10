@@ -8,6 +8,7 @@ import { validateMobileNumber } from "../utils/validation";
 import { copyInvalidNumbersToClipboard } from "../utils/clipboard";
 import { formatDate } from "../utils/dateUtils";
 import formatMobileNumber from "../utils/formatMobileNumber";
+import { sendMessage } from "../utils/sendMessage";
 
 export default function DataTable({
   data,
@@ -51,21 +52,39 @@ export default function DataTable({
       datum: row[14] || "",
     }));
 
-  const handleConfirm = () => {
-    const visibleData = filteredCustomers.map(
-      (customer) => `${customer.naam}: ${formatMobileNumber(customer.mobiel)}`
-    );
+  const handleConfirm = async () => {
+    if (filteredCustomers.length === 0) {
+      alert("Geen klanten om een bericht naar te sturen.");
+      return;
+    }
 
-    // ✅ Encodeer de message correct
-    const encodedMessage = encodeURIComponent(message);
+    const encodedMessage = message;
 
-    console.log(encodedMessage);
+    try {
+      // Maak een array van promises (1 request per klant)
+      const sendRequests = filteredCustomers.map((customer) =>
+        sendMessage(encodedMessage, formatMobileNumber(customer.mobiel))
+      );
 
-    alert(
-      `Te verzenden bericht (gecodeerd):\n\n${encodedMessage}\n\nKlanten:\n${visibleData.join(
-        "\n"
-      )}`
-    );
+      // Wacht tot alle berichten zijn verstuurd
+      const responses = await Promise.all(sendRequests);
+
+      // Maak een lijst van verzonden berichten
+      const sentCustomersList = filteredCustomers
+        .map(
+          (customer) =>
+            `${customer.naam}: ${formatMobileNumber(customer.mobiel)}`
+        )
+        .join("\n");
+
+      alert(
+        `Berichten succesvol verzonden naar ${filteredCustomers.length} klanten!\n\n${sentCustomersList}`
+      );
+      console.log("API Responses:", responses);
+    } catch (error) {
+      alert("Er is een fout opgetreden bij het verzenden van de berichten.");
+      console.error(error);
+    }
   };
 
   const renderCell = (cell, rowIndex, cellIndex) => {
