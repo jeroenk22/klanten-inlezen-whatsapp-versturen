@@ -3,12 +3,12 @@ import Modal from "./Modal";
 import ApprovedCustomersTable from "./ApprovedCustomersTable";
 import Button from "./Button";
 import Table from "./Table";
-import MobileInput from "./MobileInput";
 import { validateMobileNumber } from "../utils/validation";
 import { copyInvalidNumbersToClipboard } from "../utils/clipboard";
 import { formatDate } from "../utils/dateUtils";
 import formatMobileNumber from "../utils/formatMobileNumber";
 import { sendMessage } from "../utils/sendMessage";
+import { renderCell } from "../utils/tableUtils";
 
 export default function DataTable({
   data,
@@ -20,7 +20,7 @@ export default function DataTable({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedData, setUpdatedData] = useState(data);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
-  const [message, setMessage] = useState(""); // ✅ Houd de boodschap bij
+  const [message, setMessage] = useState(""); // Houd de boodschap bij
 
   const firstValidRow = updatedData
     .slice(1)
@@ -87,18 +87,18 @@ export default function DataTable({
     }
   };
 
-  const renderCell = (cell, rowIndex, cellIndex) => {
-    if (cellIndex === 11) {
-      const actualRowIndex = rowIndex + 1;
-      return (
-        <MobileInput
-          value={cell.value || cell}
-          onChange={(newValue) => handleInputChange(actualRowIndex, newValue)}
-        />
-      );
-    }
-    return cell;
-  };
+  // const renderCell = (cell, rowIndex, cellIndex) => {
+  //   if (cellIndex === 11) {
+  //     const actualRowIndex = rowIndex + 1;
+  //     return (
+  //       <MobileInput
+  //         value={cell.value || cell}
+  //         onChange={(newValue) => handleInputChange(actualRowIndex, newValue)}
+  //       />
+  //     );
+  //   }
+  //   return cell;
+  // };
 
   return (
     <div className="mt-4 border p-2">
@@ -155,7 +155,9 @@ export default function DataTable({
       <Table
         data={filteredData}
         onInputChange={onInputChange}
-        renderCell={renderCell}
+        renderCell={(cell, rowIndex, cellIndex) =>
+          renderCell(cell, rowIndex, cellIndex, handleInputChange)
+        }
         headerStyles={[{ width: "45px" }]}
       />
 
@@ -176,7 +178,7 @@ export default function DataTable({
         <ApprovedCustomersTable
           customers={approvedCustomers}
           onFilterChange={setFilteredCustomers}
-          onMessageChange={setMessage} // ✅ Houd de boodschap bij
+          onMessageChange={setMessage} // Houd de boodschap bij
         />
       </Modal>
     </div>
