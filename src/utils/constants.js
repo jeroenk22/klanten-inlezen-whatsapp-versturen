@@ -22,3 +22,6 @@ export const UNWANTED_COLUMNS = [
 ];
 
 export const SPECIAL_CLEAN_COLUMNS = ["LocPhone", "LocMobile"];
+
+export const API_URL =
+  "https://whatsapp-backend-proxy.vercel.app/api/send-message";
