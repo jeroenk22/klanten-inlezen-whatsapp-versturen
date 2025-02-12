@@ -14,7 +14,8 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedData, setUpdatedData] = useState(data);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
-  const [message, setMessage] = useState(""); // Houd de boodschap bij
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Nieuwe state voor loading-status
 
   const firstValidRow = updatedData
     .slice(1)
@@ -52,6 +53,8 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
       return;
     }
 
+    setIsLoading(true); // Zet de knop in de 'verzenden' status
+
     const encodedMessage = message;
 
     try {
@@ -63,11 +66,9 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
           )}`
         );
 
-        // 10 seconden vertraging voordat het volgende bericht wordt verzonden
         await new Promise((resolve) => setTimeout(resolve, 10000));
       }
 
-      // Maak een lijst van verzonden berichten
       const sentCustomersList = filteredCustomers
         .map(
           (customer) =>
@@ -81,6 +82,8 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
     } catch (error) {
       alert("Er is een fout opgetreden bij het verzenden van de berichten.");
       console.error(error);
+    } finally {
+      setIsLoading(false); // Zet de knop terug naar de normale status
     }
   };
 
@@ -99,13 +102,14 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
         <Button
           onClick={() => onCopy(2)}
           text="Kopieer Sjabloonnrs"
-          color="bg-green-500"
+          color="bg-teal-500"
         />
         <Button
           onClick={() => onCopy(3)}
           text="Kopieer Taaknrs"
           color="bg-yellow-500"
         />
+
         <Button
           onClick={() =>
             copyInvalidNumbersToClipboard(
@@ -115,7 +119,7 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
             )
           }
           text="Kopieer Ordernrs met foutief mobiel nummer"
-          color="bg-red-500"
+          color="bg-orange-500"
         />
         <Button
           onClick={() =>
@@ -126,13 +130,13 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
             )
           }
           text="Kopieer Sjabloonnrs met foutief mobiel nummer"
-          color="bg-red-600"
+          color="bg-red-500"
         />
         <Button onClick={onReset} text="Reset" color="bg-gray-500" />
         <Button
           onClick={() => setIsModalOpen(true)}
-          text="Open WhatsApp Modal"
-          color="bg-green-600"
+          text="Stuur WhatsApp bericht"
+          color="bg-green-500"
         />
       </div>
 
@@ -147,22 +151,30 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={!isLoading ? () => setIsModalOpen(false) : undefined}
         title="WhatsApp bericht sturen"
         onConfirm={handleConfirm}
         footerButtons={[
           {
             text: "Sluiten",
-            color: "bg-red-500",
-            onClick: () => setIsModalOpen(false),
+            color: isLoading
+              ? "bg-red-500 opacity-50 cursor-not-allowed"
+              : "bg-red-500",
+            onClick: !isLoading ? () => setIsModalOpen(false) : undefined,
+            disabled: isLoading, // Disable de knop correct
           },
-          { text: "Bevestigen", color: "bg-green-500", onClick: handleConfirm },
+          {
+            text: isLoading ? "Bezig met verzenden..." : "Bevestigen",
+            color: "bg-green-500",
+            onClick: handleConfirm,
+            loading: isLoading, // Zorgt voor een spinner tijdens verzenden
+          },
         ]}
       >
         <ApprovedCustomersTable
           customers={approvedCustomers}
           onFilterChange={setFilteredCustomers}
-          onMessageChange={setMessage} // Houd de boodschap bij
+          onMessageChange={setMessage}
         />
       </Modal>
     </div>
