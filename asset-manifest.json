@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/klanten-inlezen-whatsapp-versturen/static/css/main.dab50be5.css",
+    "main.js": "/klanten-inlezen-whatsapp-versturen/static/js/main.0e2039bc.js",
+    "static/js/488.342a591f.chunk.js": "/klanten-inlezen-whatsapp-versturen/static/js/488.342a591f.chunk.js",
+    "index.html": "/klanten-inlezen-whatsapp-versturen/index.html",
+    "main.dab50be5.css.map": "/klanten-inlezen-whatsapp-versturen/static/css/main.dab50be5.css.map",
+    "main.0e2039bc.js.map": "/klanten-inlezen-whatsapp-versturen/static/js/main.0e2039bc.js.map",
+    "488.342a591f.chunk.js.map": "/klanten-inlezen-whatsapp-versturen/static/js/488.342a591f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.dab50be5.css",
+    "static/js/main.0e2039bc.js"
+  ]
+}
