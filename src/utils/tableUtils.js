@@ -1,8 +1,15 @@
 import MobileInput from "../components/MobileInput";
 import formatMobileNumber from "../utils/formatMobileNumber";
 
-export function renderCell(cell, rowIndex, cellIndex, handleInputChange) {
-  if (cellIndex === 0) {
+export function renderCell(
+  cell,
+  rowIndex,
+  cellIndex,
+  handleInputChange,
+  tableType
+) {
+  // Voor ApprovedCustomersTable: Vinkje tonen in de eerste kolom
+  if (tableType === "ApprovedCustomersTable" && cellIndex === 0) {
     return (
       <div className="flex justify-center items-center h-full">
         {cell ? (
@@ -14,6 +21,12 @@ export function renderCell(cell, rowIndex, cellIndex, handleInputChange) {
     );
   }
 
+  // Voor DataTable: Rij-index tonen in de eerste kolom
+  if (tableType === "DataTable" && cellIndex === 0) {
+    return rowIndex + 1; // 1-based indexering
+  }
+
+  // Voor DataTable: MobileInput tonen in kolom 11
   if (cellIndex === 11) {
     const actualRowIndex = rowIndex + 1;
     return (

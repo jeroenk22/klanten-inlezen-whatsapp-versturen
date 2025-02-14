@@ -81,7 +81,9 @@ function CustomerTable({ customers }) {
   return (
     <Table
       data={tableData}
-      renderCell={renderCell}
+      renderCell={(cell, rowIndex, cellIndex) =>
+        renderCell(cell, rowIndex, cellIndex, null, "ApprovedCustomersTable")
+      }
       headerStyles={[{ width: "92px" }]}
     />
   );

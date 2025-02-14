@@ -10,6 +10,7 @@ export const HEADER_MAPPINGS = {
   LocContact: "Contact",
   LocPhone: "Telefoonnummer",
   LocMobile: "Mobiel",
+  ColliDescription: "Verpakking",
 };
 
 export const UNWANTED_COLUMNS = [

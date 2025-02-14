@@ -60,7 +60,7 @@ export const formatDateLabel = (momentPTA, shortFormat = false) => {
     })} (${day}-${month})`;
   }
 
-  // ✅ Standaard lange notatie: "vrijdag 7 februari 2025"
+  // Standaard lange notatie: "vrijdag 7 februari 2025"
   return datePTA.toLocaleDateString("nl-NL", {
     weekday: "long",
     day: "numeric",

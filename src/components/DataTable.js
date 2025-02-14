@@ -144,7 +144,7 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
         data={filteredData}
         onInputChange={onInputChange}
         renderCell={(cell, rowIndex, cellIndex) =>
-          renderCell(cell, rowIndex, cellIndex, handleInputChange)
+          renderCell(cell, rowIndex, cellIndex, handleInputChange, "DataTable")
         }
         headerStyles={[{ width: "45px" }]}
       />
