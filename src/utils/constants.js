@@ -1,3 +1,25 @@
+export const ORIGINAL_HEADERS = [
+  "OrderId",
+  "SjOrderId",
+  "OrdSubTaskNo",
+  "LocName",
+  "LocStreet",
+  "LocZip",
+  "LocCity",
+  "LocCountry",
+  "LocContact",
+  "LocPhone",
+  "LocMobile",
+  "MomentETD",
+  "MomentETA",
+  "MomentRTA",
+  "MomentRTD",
+  "MomentPTA",
+  "LocLocation",
+  "ColliDescription",
+  "Routenumber",
+];
+
 export const HEADER_MAPPINGS = {
   OrderId: "Ordernr.",
   SjOrderId: "Sjabloonnr.",
