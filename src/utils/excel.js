@@ -24,10 +24,9 @@ export const processExcelFile = (file, onUpload) => {
 
     const normalizeHeader = (h) => String(h ?? "").trim();
 
+    // --- bestaande strikte check (blijft intact) ---
     const validateHeadersRow = (row) => {
       const headers = (row || []).map(normalizeHeader);
-
-      // Exacte volgorde + exact aantal (strak, voorkomt kolom-shifts)
       const expected = ORIGINAL_HEADERS;
 
       if (headers.length !== expected.length) {
@@ -55,7 +54,6 @@ export const processExcelFile = (file, onUpload) => {
       const result = validateHeadersRow(data?.[0]);
       if (result.ok) return;
 
-      // Stop meteen: geen onUpload() -> React UI gaat niet door met verwerken
       const message =
         `❌ Excel header-check mislukt.\n\n` +
         `De headers moeten op rij 1 staan en exact overeenkomen met de verwachte kolommen.\n\n` +
@@ -65,19 +63,87 @@ export const processExcelFile = (file, onUpload) => {
       throw new Error(message);
     };
 
+    // --- NEW: ondersteun ook headers op rij 2 of ontbrekende headers ---
+    const rowsMatchHeaders = (row) => validateHeadersRow(row).ok;
+
+    const looksLikeDataRow = (dataRow) => {
+      // Heuristiek: eerste cel is vaak OrderId-achtig nummer als headers ontbreken
+      const first = dataRow?.[0];
+      const firstIsNumberLike =
+        typeof first === "number" || /^\d+$/.test(String(first ?? "").trim());
+
+      // Als rij strings bevat die lijken op de verwachte headers, dan is het géén data-rij
+      const rowAsString = (dataRow || [])
+        .map((v) => String(v ?? "").trim())
+        .join("|");
+      const containsAnyExpectedHeader = ORIGINAL_HEADERS.some((h) =>
+        rowAsString.includes(h),
+      );
+
+      return firstIsNumberLike && !containsAnyExpectedHeader;
+    };
+
+    const ensureHeaders = (rawData) => {
+      if (!rawData || rawData.length === 0) {
+        throw new Error("❌ Het Excelbestand bevat geen data.");
+      }
+
+      // Case 1: headers correct op rij 1 (bestaand gedrag)
+      if (rowsMatchHeaders(rawData[0])) {
+        return { data: rawData, info: null };
+      }
+
+      // Case 2: headers op rij 2 → rij 1 overslaan
+      if (rawData[1] && rowsMatchHeaders(rawData[1])) {
+        return {
+          data: [rawData[1], ...rawData.slice(2)],
+          info: "ℹ️ Headers stonden op rij 2. Rij 1 is overgeslagen.",
+        };
+      }
+
+      // Case 3: headers ontbreken → voeg ORIGINAL_HEADERS toe als rij 1
+      if (looksLikeDataRow(rawData[0])) {
+        return {
+          data: [ORIGINAL_HEADERS, ...rawData],
+          info: "ℹ️ Headers ontbraken. Verwachte headers zijn automatisch toegevoegd op rij 1.",
+        };
+      }
+
+      // Case 4: onbekend formaat → hard fail, met gevonden rij 1
+      const found = (rawData[0] || []).map((x) => String(x ?? "").trim());
+      const message =
+        `❌ Excel header-check mislukt.\n\n` +
+        `Ik verwacht:\n` +
+        `- headers op rij 1, of\n` +
+        `- headers op rij 2, of\n` +
+        `- géén headers waarbij rij 1 meteen data is.\n\n` +
+        `Dit bestand past daar niet in.\n\n` +
+        `Gevonden rij 1:\n${found.join(", ")}`;
+
+      throw new Error(message);
+    };
+
     let data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
+    // NEW: maak data "veilig" voor de rest van je bestaande processing
     try {
+      const result = ensureHeaders(data);
+      data = result.data;
+
+      // Optioneel: alleen melding als we echt moesten corrigeren
+      if (result.info) alert(result.info);
+
+      // Houd de originele strikte check als extra zekerheid (rij 1 is nu altijd correct)
       assertHeadersOnFirstRow(data);
     } catch (err) {
       alert(err.message);
       return; // stop: React gaat niet verder met verwerken
     }
 
-    // Haal de index van de datumkolom op
+    // Haal de index van de datumkolom op (bestaand gedrag)
     const dateColumnIndex = data[0].indexOf("MomentRTA");
 
-    // Verwerk de ruwe data zonder te formatteren
+    // Verwerk de ruwe data zonder te formatteren (bestaand gedrag)
     const updatedData = processSheetData(data, dateColumnIndex);
 
     onUpload(updatedData);
@@ -101,7 +167,6 @@ const enforceStringValues = (sheet) => {
  * Verwerkt de Excel-sheet, hernoemt headers, verwijdert ongewenste kolommen en reinigt de cellen.
  */
 const processSheetData = (data, dateColumnIndex) => {
-  // Ontvangt dateColumnIndex
   return data.map((row, index) => {
     if (index === 0) {
       return [
@@ -109,15 +174,15 @@ const processSheetData = (data, dateColumnIndex) => {
         ...row
           .map(renameHeader)
           .filter((header) => !UNWANTED_COLUMNS.includes(header)),
-        "Datum", // Zorg dat de header correct wordt hernoemd
+        "Datum",
       ];
     }
     return [
       index,
       ...row
-        .map((cell, i) => cleanCell(cell, data[0][i])) // Verwerk elke cel
-        .filter((_, i) => !UNWANTED_COLUMNS.includes(data[0][i])), // Verwijder ongewenste kolommen
-      row[dateColumnIndex] || "", // Sla de ruwe datum op zonder formattering
+        .map((cell, i) => cleanCell(cell, data[0][i]))
+        .filter((_, i) => !UNWANTED_COLUMNS.includes(data[0][i])),
+      row[dateColumnIndex] || "",
     ];
   });
 };
