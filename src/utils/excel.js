@@ -3,6 +3,7 @@ import {
   HEADER_MAPPINGS,
   UNWANTED_COLUMNS,
   SPECIAL_CLEAN_COLUMNS,
+  ORIGINAL_HEADERS,
 } from "./constants";
 
 export const processExcelFile = (file, onUpload) => {
@@ -21,7 +22,57 @@ export const processExcelFile = (file, onUpload) => {
 
     enforceStringValues(sheet);
 
+    const normalizeHeader = (h) => String(h ?? "").trim();
+
+    const validateHeadersRow = (row) => {
+      const headers = (row || []).map(normalizeHeader);
+
+      // Exacte volgorde + exact aantal (strak, voorkomt kolom-shifts)
+      const expected = ORIGINAL_HEADERS;
+
+      if (headers.length !== expected.length) {
+        return {
+          ok: false,
+          reason: `Aantal kolommen klopt niet (gevonden ${headers.length}, verwacht ${expected.length}).`,
+          found: headers,
+        };
+      }
+
+      for (let i = 0; i < expected.length; i++) {
+        if (headers[i] !== expected[i]) {
+          return {
+            ok: false,
+            reason: `Header mismatch op kolom ${i + 1}: gevonden "${headers[i]}", verwacht "${expected[i]}".`,
+            found: headers,
+          };
+        }
+      }
+
+      return { ok: true };
+    };
+
+    const assertHeadersOnFirstRow = (data) => {
+      const result = validateHeadersRow(data?.[0]);
+      if (result.ok) return;
+
+      // Stop meteen: geen onUpload() -> React UI gaat niet door met verwerken
+      const message =
+        `❌ Excel header-check mislukt.\n\n` +
+        `De headers moeten op rij 1 staan en exact overeenkomen met de verwachte kolommen.\n\n` +
+        `${result.reason}\n\n` +
+        `Gevonden headers (rij 1):\n${(result.found || []).join(", ")}`;
+
+      throw new Error(message);
+    };
+
     let data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+    try {
+      assertHeadersOnFirstRow(data);
+    } catch (err) {
+      alert(err.message);
+      return; // stop: React gaat niet verder met verwerken
+    }
 
     // Haal de index van de datumkolom op
     const dateColumnIndex = data[0].indexOf("MomentRTA");
