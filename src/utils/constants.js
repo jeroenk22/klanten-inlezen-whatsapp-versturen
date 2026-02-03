@@ -46,7 +46,12 @@ export const UNWANTED_COLUMNS = [
 
 export const SPECIAL_CLEAN_COLUMNS = ["LocPhone", "LocMobile"];
 
-export const API_URL =
-  "https://whatsapp-backend-proxy.vercel.app/api/send-message";
+const isLocalhost =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+
+export const API_URL = isLocalhost
+  ? "/api/send-message"
+  : "https://whatsapp-backend-proxy.vercel.app/api/send-message";
 
 export const API_TOKEN = "aP7xF2mQ9vS5kD1rT8jW4nC6bE0hG3uY2qL9tV7pR5oM1cN";

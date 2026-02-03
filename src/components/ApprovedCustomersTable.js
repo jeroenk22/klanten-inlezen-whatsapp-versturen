@@ -6,6 +6,8 @@ import { generateMessage } from "../utils/messageTemplate";
 import { renderCell } from "../utils/tableUtils";
 import { formatTableData } from "../utils/tableUtils";
 
+const toTrimmedString = (value) => String(value ?? "").trim();
+
 export default function ApprovedCustomersTable({
   customers,
   onFilterChange,
@@ -18,8 +20,11 @@ export default function ApprovedCustomersTable({
 
   useEffect(() => {
     if (!isUserEditing.current) {
-      const firstValidCustomer = customers.find((c) => c.datum?.trim() !== "");
+      const firstValidCustomer = customers.find(
+        (c) => toTrimmedString(c.datum) !== "",
+      );
       if (firstValidCustomer) {
+        // generateMessage kan prima overweg met Date/strings omdat het new Date(datum) doet
         const initialMessage = generateMessage(firstValidCustomer.datum);
         setMessage(initialMessage);
         onMessageChange?.(initialMessage);
@@ -75,7 +80,7 @@ function MessageInput({ value, onChange }) {
 function CustomerTable({ customers }) {
   const tableData = useMemo(
     () => formatTableData(customers, ["Sjabloon", "Naam", "Plaats", "Mobiel"]),
-    [customers]
+    [customers],
   );
 
   return (

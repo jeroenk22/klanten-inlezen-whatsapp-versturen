@@ -130,8 +130,10 @@ export const processExcelFile = (file, onUpload) => {
       const result = ensureHeaders(data);
       data = result.data;
 
-      // Optioneel: alleen melding als we echt moesten corrigeren
-      if (result.info) alert(result.info);
+      // Stil voor gebruiker, alleen zichtbaar voor developers
+      if (result.info) {
+        console.info(`[Excel import] ${result.info}`);
+      }
 
       // Houd de originele strikte check als extra zekerheid (rij 1 is nu altijd correct)
       assertHeadersOnFirstRow(data);
@@ -161,6 +163,29 @@ const enforceStringValues = (sheet) => {
       sheet[cell].v = String(sheet[cell].v);
     }
   });
+};
+
+const normalizeDateTimeValue = (value) => {
+  if (!value) return "";
+
+  // XLSX met cellDates:true kan Date objects geven
+  if (value instanceof Date) {
+    // Maak er een string van die je code overal snapt
+    // yyyy-mm-dd hh:mm (zonder seconden/millis)
+    const yyyy = value.getFullYear();
+    const mm = String(value.getMonth() + 1).padStart(2, "0");
+    const dd = String(value.getDate()).padStart(2, "0");
+    const hh = String(value.getHours()).padStart(2, "0");
+    const mi = String(value.getMinutes()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+  }
+
+  // Strings uit SSMS: "2026-02-03 08:00:00.000" of "2026-02-03 08:00"
+  // Laat beide werken: trim en haal eventuele .000 weg
+  const str = String(value).trim();
+
+  // Verwijder milliseconden als die er zijn
+  return str.replace(/\.\d{3}$/, "");
 };
 
 /**
@@ -197,6 +222,12 @@ export const renameHeader = (header) => HEADER_MAPPINGS[header] || header;
  */
 export const cleanCell = (cell, columnName) => {
   if (cell === "NULL") return "";
+
+  // Normaliseer alle Moment* kolommen zodat Date/string beide werken
+  if (columnName && /^Moment(ETD|ETA|RTA|RTD|PTA)$/.test(columnName)) {
+    return normalizeDateTimeValue(cell);
+  }
+
   if (
     typeof cell === "string" &&
     columnName &&
@@ -204,5 +235,6 @@ export const cleanCell = (cell, columnName) => {
   ) {
     return cell.replace(/^'+/, "").replace(/'+$/, "").trim();
   }
+
   return cell;
 };
