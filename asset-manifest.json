@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/klanten-inlezen-whatsapp-versturen/static/css/main.dab50be5.css",
-    "main.js": "/klanten-inlezen-whatsapp-versturen/static/js/main.f9aae23b.js",
+    "main.css": "/klanten-inlezen-whatsapp-versturen/static/css/main.6f5f1847.css",
+    "main.js": "/klanten-inlezen-whatsapp-versturen/static/js/main.81c092ef.js",
     "static/js/488.342a591f.chunk.js": "/klanten-inlezen-whatsapp-versturen/static/js/488.342a591f.chunk.js",
     "index.html": "/klanten-inlezen-whatsapp-versturen/index.html",
-    "main.dab50be5.css.map": "/klanten-inlezen-whatsapp-versturen/static/css/main.dab50be5.css.map",
-    "main.f9aae23b.js.map": "/klanten-inlezen-whatsapp-versturen/static/js/main.f9aae23b.js.map",
+    "main.6f5f1847.css.map": "/klanten-inlezen-whatsapp-versturen/static/css/main.6f5f1847.css.map",
+    "main.81c092ef.js.map": "/klanten-inlezen-whatsapp-versturen/static/js/main.81c092ef.js.map",
     "488.342a591f.chunk.js.map": "/klanten-inlezen-whatsapp-versturen/static/js/488.342a591f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.dab50be5.css",
-    "static/js/main.f9aae23b.js"
+    "static/css/main.6f5f1847.css",
+    "static/js/main.81c092ef.js"
   ]
 }
