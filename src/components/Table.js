@@ -1,34 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 export default function Table({ data, renderCell, headerStyles = [] }) {
   const [sortedColumn, setSortedColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
-
-  if (!data || data.length === 0) return <p>Geen data beschikbaar.</p>;
 
   const handleSort = (colIndex) => {
     const direction =
       sortedColumn === colIndex && sortDirection === "asc" ? "desc" : "asc";
     setSortedColumn(colIndex);
     setSortDirection(direction);
+  };
 
-    const sortedData = [...data.slice(1)].sort((a, b) => {
-      const valA = a[colIndex] ? a[colIndex].toString().toLowerCase() : "";
-      const valB = b[colIndex] ? b[colIndex].toString().toLowerCase() : "";
-
-      if (valA < valB) return direction === "asc" ? -1 : 1;
-      if (valA > valB) return direction === "asc" ? 1 : -1;
+  const sortedData = useMemo(() => {
+    if (!data || data.length === 0 || sortedColumn === null) return data;
+    const rows = [...data.slice(1)].sort((a, b) => {
+      const valA = a[sortedColumn]?.toString().toLowerCase() ?? "";
+      const valB = b[sortedColumn]?.toString().toLowerCase() ?? "";
+      if (valA < valB) return sortDirection === "asc" ? -1 : 1;
+      if (valA > valB) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
+    return [data[0], ...rows];
+  }, [data, sortedColumn, sortDirection]);
 
-    data.splice(1, data.length - 1, ...sortedData);
-  };
+  if (!sortedData || sortedData.length === 0) return <p>Geen data beschikbaar.</p>;
 
   return (
     <table className="table-auto border-collapse border border-gray-400 w-full text-sm">
       <thead>
         <tr>
-          {data[0].map((header, colIndex) => (
+          {sortedData[0].map((header, colIndex) => (
             <th
               key={colIndex}
               className="border border-gray-300 px-2 py-1 text-left bg-gray-200 cursor-pointer hover:bg-gray-300"
@@ -44,7 +45,7 @@ export default function Table({ data, renderCell, headerStyles = [] }) {
         </tr>
       </thead>
       <tbody>
-        {data.slice(1).map((row, rowIndex) => (
+        {sortedData.slice(1).map((row, rowIndex) => (
           <tr key={rowIndex}>
             {row.map((cell, cellIndex) => (
               <td key={cellIndex} className="border border-gray-300 px-2 py-1">

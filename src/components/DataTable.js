@@ -24,8 +24,8 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
     ? formatDate(firstValidRow[14])
     : "Geen datum beschikbaar";
 
-  const filteredData = data.map((row) =>
-    row.filter((_, index) => data[0][index] !== "Datum")
+  const filteredData = updatedData.map((row) =>
+    row.filter((_, index) => updatedData[0][index] !== "Datum")
   );
 
   const handleInputChange = (rowIndex, newValue) => {
