@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Button from './Button';
 
 export default function Modal({
@@ -8,6 +8,24 @@ export default function Modal({
   children,
   footerButtons,
 }) {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Voorkom scrollen van de achtergrond
+    document.body.style.overflow = 'hidden';
+
+    // Sluit modal met Escape
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
