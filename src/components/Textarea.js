@@ -19,10 +19,11 @@ export default function Textarea({ label, value, onChange, placeholder }) {
       <textarea
         ref={textareaRef}
         className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-inner resize-none overflow-hidden"
+        style={{ minHeight: '10rem' }}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        rows={1} // Start met 1 regel
+        rows={1}
       />
     </div>
   );
