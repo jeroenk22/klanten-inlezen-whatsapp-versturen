@@ -60,8 +60,8 @@ export default function ApprovedCustomersTable({
   return (
     <div className="flex flex-col h-full">
       <MessageInput value={message} onChange={handleMessageChange} />
-      <CustomerTable customers={filteredCustomers} />
       <FilterButtons filter={filter} setFilter={setFilter} />
+      <CustomerTable customers={filteredCustomers} />
     </div>
   );
 }
