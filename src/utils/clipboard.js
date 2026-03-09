@@ -13,6 +13,8 @@ export const copyInvalidNumbersToClipboard = (
 
   navigator.clipboard.writeText(invalidNumbers).then(() => {
     alert(alertMessage);
+  }).catch(() => {
+    alert("Kon niet kopiëren naar klembord. Controleer de browsermachtigingen.");
   });
 };
 
@@ -28,5 +30,7 @@ export const copyColumnToClipboard = (
 
   navigator.clipboard.writeText(values).then(() => {
     alert(alertMessage);
+  }).catch(() => {
+    alert("Kon niet kopiëren naar klembord. Controleer de browsermachtigingen.");
   });
 };

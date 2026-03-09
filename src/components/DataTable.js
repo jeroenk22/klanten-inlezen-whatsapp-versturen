@@ -15,7 +15,8 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
   const [updatedData, setUpdatedData] = useState(data);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Nieuwe state voor loading-status
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSent, setIsSent] = useState(false);
 
   const firstValidRow = updatedData
     .slice(1)
@@ -79,12 +80,18 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
       alert(
         `Berichten succesvol verzonden naar ${filteredCustomers.length} klanten!\n\n${sentCustomersList}`
       );
+      setIsSent(true);
     } catch (error) {
       alert("Er is een fout opgetreden bij het verzenden van de berichten.");
       console.error(error);
     } finally {
-      setIsLoading(false); // Zet de knop terug naar de normale status
+      setIsLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsSent(false);
   };
 
   return (
@@ -151,22 +158,23 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={!isLoading ? () => setIsModalOpen(false) : undefined}
+        onClose={!isLoading ? handleCloseModal : undefined}
         title="WhatsApp bericht sturen"
         onConfirm={handleConfirm}
         footerButtons={[
           {
             text: "Sluiten",
             color: `bg-red-500${isLoading ? " opacity-50 cursor-not-allowed" : ""}`,
-            onClick: !isLoading ? () => setIsModalOpen(false) : undefined,
+            onClick: !isLoading ? handleCloseModal : undefined,
             disabled: isLoading,
           },
-          {
-            text: isLoading ? "Bezig met verzenden..." : "Bevestigen",
+          ...(!isSent ? [{
+            text: isLoading ? "Bezig met verzenden..." : "Verstuur",
+            icon: isLoading ? undefined : "📨",
             color: "bg-green-500",
             onClick: handleConfirm,
             loading: isLoading,
-          },
+          }] : []),
         ]}
       >
         <ApprovedCustomersTable
