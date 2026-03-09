@@ -157,17 +157,15 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
         footerButtons={[
           {
             text: "Sluiten",
-            color: isLoading
-              ? "bg-red-500 opacity-50 cursor-not-allowed"
-              : "bg-red-500",
+            color: `bg-red-500${isLoading ? " opacity-50 cursor-not-allowed" : ""}`,
             onClick: !isLoading ? () => setIsModalOpen(false) : undefined,
-            disabled: isLoading, // Disable de knop correct
+            disabled: isLoading,
           },
           {
             text: isLoading ? "Bezig met verzenden..." : "Bevestigen",
             color: "bg-green-500",
             onClick: handleConfirm,
-            loading: isLoading, // Zorgt voor een spinner tijdens verzenden
+            loading: isLoading,
           },
         ]}
       >

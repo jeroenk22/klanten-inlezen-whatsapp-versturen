@@ -3,8 +3,7 @@ import Table from "./Table";
 import Textarea from "./Textarea";
 import { FilterButtons } from "../components/FilterButtons";
 import { generateMessage } from "../utils/messageTemplate";
-import { renderCell } from "../utils/tableUtils";
-import { formatTableData } from "../utils/tableUtils";
+import { renderCell, formatTableData } from "../utils/tableUtils";
 
 const toTrimmedString = (value) => String(value ?? "").trim();
 
