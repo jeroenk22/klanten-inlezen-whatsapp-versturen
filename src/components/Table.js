@@ -11,25 +11,27 @@ export default function Table({ data, renderCell, headerStyles = [] }) {
     setSortDirection(direction);
   };
 
-  const sortedData = useMemo(() => {
-    if (!data || data.length === 0 || sortedColumn === null) return data;
-    const rows = [...data.slice(1)].sort((a, b) => {
-      const valA = a[sortedColumn]?.toString().toLowerCase() ?? "";
-      const valB = b[sortedColumn]?.toString().toLowerCase() ?? "";
+  // sortedRows: [{ row, originalIndex }] — originalIndex is 1-based (skips header)
+  const sortedRows = useMemo(() => {
+    if (!data || data.length === 0) return [];
+    const indexed = data.slice(1).map((row, i) => ({ row, originalIndex: i + 1 }));
+    if (sortedColumn === null) return indexed;
+    return [...indexed].sort((a, b) => {
+      const valA = a.row[sortedColumn]?.toString().toLowerCase() ?? "";
+      const valB = b.row[sortedColumn]?.toString().toLowerCase() ?? "";
       if (valA < valB) return sortDirection === "asc" ? -1 : 1;
       if (valA > valB) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-    return [data[0], ...rows];
   }, [data, sortedColumn, sortDirection]);
 
-  if (!sortedData || sortedData.length === 0) return <p>Geen data beschikbaar.</p>;
+  if (!data || data.length === 0) return <p>Geen data beschikbaar.</p>;
 
   return (
     <table className="table-auto border-collapse border border-gray-400 w-full text-sm">
       <thead>
         <tr>
-          {sortedData[0].map((header, colIndex) => (
+          {data[0].map((header, colIndex) => (
             <th
               key={colIndex}
               className="border border-gray-300 px-2 py-1 text-left bg-gray-200 cursor-pointer hover:bg-gray-300"
@@ -45,11 +47,11 @@ export default function Table({ data, renderCell, headerStyles = [] }) {
         </tr>
       </thead>
       <tbody>
-        {sortedData.slice(1).map((row, rowIndex) => (
-          <tr key={rowIndex}>
+        {sortedRows.map(({ row, originalIndex }, displayIndex) => (
+          <tr key={originalIndex}>
             {row.map((cell, cellIndex) => (
               <td key={cellIndex} className="border border-gray-300 px-2 py-1">
-                {renderCell ? renderCell(cell, rowIndex, cellIndex) : cell}
+                {renderCell ? renderCell(cell, cellIndex, originalIndex) : cell}
               </td>
             ))}
           </tr>

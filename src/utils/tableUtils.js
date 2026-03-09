@@ -3,8 +3,8 @@ import formatMobileNumber from "../utils/formatMobileNumber";
 
 export function renderCell(
   cell,
-  rowIndex,
   cellIndex,
+  originalIndex,
   handleInputChange,
   tableType
 ) {
@@ -21,18 +21,17 @@ export function renderCell(
     );
   }
 
-  // Voor DataTable: Rij-index tonen in de eerste kolom
+  // Voor DataTable: Rij-index tonen in de eerste kolom (stabiel na sorteren)
   if (tableType === "DataTable" && cellIndex === 0) {
-    return rowIndex + 1; // 1-based indexering
+    return originalIndex;
   }
 
   // Voor DataTable: MobileInput tonen in kolom 11
   if (tableType === "DataTable" && cellIndex === 11) {
-    const actualRowIndex = rowIndex + 1;
     return (
       <MobileInput
         value={cell.value || cell}
-        onChange={(newValue) => handleInputChange(actualRowIndex, newValue)}
+        onChange={(newValue) => handleInputChange(originalIndex, newValue)}
       />
     );
   }
