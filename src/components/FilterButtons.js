@@ -9,7 +9,7 @@ export function FilterButtons({ filter, setFilter }) {
   ];
 
   return (
-    <div className='mt-2 flex justify-center gap-2 border-t pt-2 bg-white sticky bottom-0 p-3'>
+    <div className='flex justify-center gap-2 border-b pb-2 bg-white p-3'>
       {filters.map(({ key, label }) => (
         <Button
           key={key}
