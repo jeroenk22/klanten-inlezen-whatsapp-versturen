@@ -170,7 +170,11 @@ export default function DataTable({ data, onInputChange, onCopy, onReset }) {
           },
           ...(!isSent ? [{
             text: isLoading ? "Bezig met verzenden..." : "Verstuur",
-            icon: isLoading ? undefined : "📨",
+            icon: isLoading ? undefined : (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" style={{ display: "inline", verticalAlign: "middle" }}>
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+              </svg>
+            ),
             color: "bg-green-500",
             onClick: handleConfirm,
             loading: isLoading,
