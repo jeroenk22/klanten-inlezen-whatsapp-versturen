@@ -1,4 +1,4 @@
-import { formatTableData } from "./tableUtils";
+import { formatTableData } from "../utils/tableUtils";
 
 describe("formatTableData", () => {
   const customers = [

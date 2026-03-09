@@ -1,4 +1,4 @@
-import { validateMobileNumber } from "./validation";
+import { validateMobileNumber } from "../utils/validation";
 
 describe("validateMobileNumber", () => {
   describe("geldige nummers", () => {

@@ -1,4 +1,4 @@
-import { generateMessage } from "./messageTemplate";
+import { generateMessage } from "../utils/messageTemplate";
 
 describe("generateMessage", () => {
   it("geeft lege string terug bij geen datum", () => {
