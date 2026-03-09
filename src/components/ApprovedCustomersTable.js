@@ -14,7 +14,7 @@ export default function ApprovedCustomersTable({
   onMessageChange,
 }) {
   const [message, setMessage] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("templates");
   const isUserEditing = useRef(false);
   const prevFilteredCustomers = useRef([]);
 
