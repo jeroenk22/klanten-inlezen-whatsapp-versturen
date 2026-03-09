@@ -27,7 +27,7 @@ export function renderCell(
   }
 
   // Voor DataTable: MobileInput tonen in kolom 11
-  if (cellIndex === 11) {
+  if (tableType === "DataTable" && cellIndex === 11) {
     const actualRowIndex = rowIndex + 1;
     return (
       <MobileInput
